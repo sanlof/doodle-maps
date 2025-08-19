@@ -5,8 +5,9 @@ const ctx = canvas.getContext('2d');
 const canvasOffsetX = canvas.offsetLeft;
 const canvasOffsetY = canvas.offsetTop;
 
-canvas.width = window.innerWidth - canvasOffsetX;
-canvas.height = window.innerHeight - canvasOffsetY;
+const drawingBoard = canvas.parentElement;
+canvas.width = drawingBoard.clientWidth;
+canvas.height = drawingBoard.clientHeight;
 
 let isPainting = false;
 let lineWidth = 5;
