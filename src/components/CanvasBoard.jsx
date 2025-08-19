@@ -17,6 +17,23 @@ export default function CanvasBoard({
     const ctx = canvas.getContext("2d");
     ctxRef.current = ctx;
 
+    canvas.getBlob = () =>
+      new Promise((resolve, reject) => {
+        try {
+          // PNG (lossless), kan ändras till "image/webp" om du vill
+          canvas.toBlob((blob) => {
+            if (blob) resolve(blob);
+            else reject(new Error("Kunde inte skapa bild från canvas."));
+          }, "image/png");
+        } catch (err) {
+          reject(err);
+        }
+      });
+
+    canvas.clear = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    };
+
     const updateOffset = () => {
       const rect = canvas.getBoundingClientRect();
       offsetRef.current = { x: rect.left, y: rect.top };

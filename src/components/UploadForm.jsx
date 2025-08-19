@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { supabase } from "../lib/supabaseClient.js";
 
-export default function UploadForm({ getBlob }) {
+export default function UploadForm({ getBlob, onUploaded = () => {} }) {
   const [name, setName] = useState("");
   const [status, setStatus] = useState("");
 
@@ -17,7 +17,7 @@ export default function UploadForm({ getBlob }) {
 
     try {
       setStatus("Judging masterpiece");
-      const blob = await getBlob();
+      const blob = await getBlob(); // <-- här kraschade du tidigare
 
       const filePath = `uploads/${Date.now()}.png`;
 
@@ -25,7 +25,6 @@ export default function UploadForm({ getBlob }) {
       const { error: uploadErr } = await supabase.storage
         .from("paintings")
         .upload(filePath, blob, { contentType: "image/png", upsert: false });
-
       if (uploadErr) throw uploadErr;
 
       setStatus("Saving...");
@@ -37,6 +36,7 @@ export default function UploadForm({ getBlob }) {
         setStatus("Uppladdad, men metadata-fel: " + dbError.message);
       } else {
         setStatus("Drawing saved! ✅");
+        onUploaded?.(); // <--- rensa canvas efter lyckad uppladdning
       }
     } catch (err) {
       console.error(err);
