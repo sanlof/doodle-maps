@@ -8,8 +8,8 @@ export default function App() {
   const ctxRef = useRef(null);
   const lineWidthRef = useRef(5);
   const lineColorRef = useRef("#ff0000");
-  
-   const getBlob = async () => {
+
+  const getBlob = async () => {
     if (!canvasRef.current?.getBlob) {
       throw new Error("Canvas är inte redo ännu.");
     }
@@ -28,7 +28,7 @@ export default function App() {
         ctxRef={ctxRef}
         lineWidthRef={lineWidthRef}
         lineColorRef={lineColorRef}
-      />  
+      />
       <Toolbar
         canvasRef={canvasRef}
         ctxRef={ctxRef}
