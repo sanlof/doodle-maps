@@ -1,43 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Doodle Maps</title>
-    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h1>Draw</h1>
-
-    <section class="drawing-area">
-      <div class="drawing-board">
-        <canvas id="drawing-board"></canvas>
-      </div>
-
-      <div id="toolbar">
-        <label for="stroke">Stroke</label>
-        <input id="stroke" name="stroke" type="color" />
-        <label for="lineWidth">Line Width</label>
-        <input id="lineWidth" name="lineWidth" type="number" value="5" />
-        <button id="clear">Clear</button>
-        <button id="save">Save</button>
-      </div>
-    </section>
-    <section class="upload">
-      <form id="upload-form">
-        <input type="file" id="file-input" accept="image/*" required />
-        <input type="text" id="name-input" placeholder="Ditt namn" required />
-        <button type="submit">Ladda upp</button>
-      </form>
-      <div id="status"></div>
-    </section>
-
-    <!-- <div id="map"></div> -->
-
-    <script type="module" src="script.js"></script>
-    <script
-      async
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDdqsm7qQQ5AKqyyE_c42hYzZJN_UiHBG4&callback=initMap"
-    ></script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

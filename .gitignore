@@ -1,0 +1,13 @@
+# Node / Vite
+node_modules/
+dist/
+.vite/
+
+# Miljöfiler
+.env
+.env.local
+.env.*.local
+
+# Editor / OS
+.DS_Store
+.vscode/
