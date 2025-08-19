@@ -5,9 +5,15 @@ import React, {
   useImperativeHandle,
   useState,
 } from "react";
+
 import "./CanvasBoard.css";
 
-const CanvasBoard = forwardRef(function CanvasBoard(_, ref) {
+export default function CanvasBoard({
+  canvasRef,
+  ctxRef,
+  lineWidthRef,
+  lineColorRef,
+}) {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
   const isPaintingRef = useRef(false);
@@ -20,6 +26,20 @@ const CanvasBoard = forwardRef(function CanvasBoard(_, ref) {
   // Hantera canvas-resize separat så att context state inte tappas
   useEffect(() => {
     const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    ctxRef.current = ctx;
+
+    const parent = canvas.parentElement;
+    canvas.width = parent.clientWidth;
+    canvas.height = parent.clientHeight;
+
+    const updateOffset = () => {
+      const rect = canvas.getBoundingClientRect();
+      offsetRef.current = { x: rect.left, y: rect.top };
+    };
+    updateOffset();
+    window.addEventListener("resize", updateOffset);
+
     function resizeCanvasAndOffset() {
       const parent = canvas.parentElement;
 
@@ -85,8 +105,8 @@ const CanvasBoard = forwardRef(function CanvasBoard(_, ref) {
       e.preventDefault();
       const { x, y } = getXY(e);
       ctx.lineWidth = lineWidthRef.current;
+      ctx.strokeStyle = lineColorRef.current;
       ctx.lineCap = "round";
-      ctx.strokeStyle = stroke;
       ctx.lineTo(x, y);
       ctx.stroke();
     };
@@ -113,6 +133,7 @@ const CanvasBoard = forwardRef(function CanvasBoard(_, ref) {
     canvas.addEventListener("touchmove", draw, { passive: false });
 
     return () => {
+      window.removeEventListener("resize", updateOffset); // behövs denna?
       canvas.removeEventListener("mousedown", startPainting);
       canvas.removeEventListener("mouseup", stopPainting);
       canvas.removeEventListener("mousemove", draw);
@@ -121,7 +142,7 @@ const CanvasBoard = forwardRef(function CanvasBoard(_, ref) {
       canvas.removeEventListener("touchend", stopPainting);
       canvas.removeEventListener("touchmove", draw);
     };
-  }, [stroke]);
+  }, [canvasRef, ctxRef, lineWidthRef, lineColorRef]);
 
   useImperativeHandle(ref, () => ({
     async getBlob() {
@@ -146,32 +167,6 @@ const CanvasBoard = forwardRef(function CanvasBoard(_, ref) {
 
   return (
     <div className="drawing-area">
-      <div className="toolbar">
-        <label htmlFor="stroke">Color</label>
-        <input
-          id="stroke"
-          type="color"
-          value={stroke}
-          onChange={(e) => setStroke(e.target.value)}
-        />
-        <label htmlFor="lineWidth">Pen width</label>
-        <input
-          id="lineWidth"
-          type="number"
-          min={1}
-          max={64}
-          value={lineWidth}
-          onChange={(e) => {
-            const v = Number(e.target.value || 5);
-            setLineWidth(v);
-            lineWidthRef.current = v;
-          }}
-        />
-        <button type="button" onClick={() => ref?.current?.clear?.()}>
-          Rensa
-        </button>
-      </div>
-
       <div className="board">
         <canvas ref={canvasRef} />
       </div>
