@@ -1,8 +1,12 @@
-const canvas = document.getElementById('drawing-board');
-const toolbar = document.getElementById('toolbar');
+// --- Supabase connection ---
+import { supabase } from "./supabase.js";
+
+// --- Painting on canvas ---
+const canvas = document.getElementById("drawing-board");
+const toolbar = document.getElementById("toolbar");
+const ctx = canvas.getContext("2d");
 
 if (canvas && toolbar) {
-  const ctx = canvas.getContext('2d');
   const canvasOffsetX = canvas.offsetLeft;
   const canvasOffsetY = canvas.offsetTop;
 
@@ -19,25 +23,25 @@ if (canvas && toolbar) {
     if (e.touches) {
       return {
         x: e.touches[0].clientX - canvasOffsetX,
-        y: e.touches[0].clientY - canvasOffsetY
+        y: e.touches[0].clientY - canvasOffsetY,
       };
     } else {
       return {
         x: e.clientX - canvasOffsetX,
-        y: e.clientY - canvasOffsetY
+        y: e.clientY - canvasOffsetY,
       };
     }
   }
 
-  toolbar.addEventListener('click', e => {
-    if (e.target.id === 'clear') {
+  toolbar.addEventListener("click", (e) => {
+    if (e.target.id === "clear") {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
   });
 
-  toolbar.addEventListener('change', e => {
-    if (e.target.id === 'stroke') ctx.strokeStyle = e.target.value;
-    if (e.target.id === 'lineWidth') lineWidth = e.target.value;
+  toolbar.addEventListener("change", (e) => {
+    if (e.target.id === "stroke") ctx.strokeStyle = e.target.value;
+    if (e.target.id === "lineWidth") lineWidth = e.target.value;
   });
 
   function draw(e) {
@@ -45,7 +49,7 @@ if (canvas && toolbar) {
     e.preventDefault();
     const { x, y } = getXY(e);
     ctx.lineWidth = lineWidth;
-    ctx.lineCap = 'round';
+    ctx.lineCap = "round";
     ctx.lineTo(x, y);
     ctx.stroke();
   }
@@ -63,26 +67,69 @@ if (canvas && toolbar) {
     ctx.beginPath();
   }
 
-  const saveBtn = document.getElementById('save');
+  // Save locally as PNG
+  const saveBtn = document.getElementById("save");
   if (saveBtn) {
-    saveBtn.addEventListener('click', () => {
-      const dataURL = canvas.toDataURL('image/png');
-      const link = document.createElement('a');
+    saveBtn.addEventListener("click", () => {
+      const dataURL = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
       link.href = dataURL;
-      link.download = 'drawing.png';
+      link.download = "drawing.png";
       link.click();
     });
   }
 
-  canvas.addEventListener('mousedown', startPainting);
-  canvas.addEventListener('mouseup', stopPainting);
-  canvas.addEventListener('mousemove', draw);
+  // Upload to Supabase
+  const form = document.getElementById("upload-form");
+  const fileInput = document.getElementById("file-input");
+  const nameInput = document.getElementById("name-input");
+  const status = document.getElementById("status");
 
-  canvas.addEventListener('touchstart', startPainting, { passive: false });
-  canvas.addEventListener('touchend', stopPainting);
-  canvas.addEventListener('touchmove', draw, { passive: false });
+  if (form) {
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const file = fileInput.files[0];
+      const name = nameInput.value.trim();
+      if (!file || !name) return;
+
+      const filePath = `uploads/${Date.now()}-${file.name}`;
+
+      // Upload file to bucket
+      const { data, error } = await supabase.storage
+        .from("paintings")
+        .upload(filePath, file);
+
+      if (error) {
+        console.error(error);
+        status.textContent = "Upload error: " + error.message;
+        return;
+      }
+
+      // Save meta data in table paintings_meta
+      const { error: dbError } = await supabase
+        .from("paintings_meta")
+        .insert({ file_path: filePath, artist_name: name });
+
+      if (dbError) {
+        console.error(dbError);
+        status.textContent =
+          "Painting uploaded but metadata error: " + dbError.message;
+      } else {
+        status.textContent = "Painting successfully uploaded!";
+        form.reset();
+      }
+    });
+  }
+
+  // Canvas events
+  canvas.addEventListener("mousedown", startPainting);
+  canvas.addEventListener("mouseup", stopPainting);
+  canvas.addEventListener("mousemove", draw);
+  canvas.addEventListener("touchstart", startPainting, { passive: false });
+  canvas.addEventListener("touchend", stopPainting);
+  canvas.addEventListener("touchmove", draw, { passive: false });
 }
-
 
 /***** GOOGLE MAPS *****/
 
@@ -93,8 +140,10 @@ const PLACES = [
 ];
 
 const BOUNDS_RECT = {
-  south: 57.698, west: 11.952,
-  north: 57.709, east: 11.975
+  south: 57.698,
+  west: 11.952,
+  north: 57.709,
+  east: 11.975,
 };
 
 const POLY_PATH = [
@@ -117,9 +166,9 @@ window.initMap = function initMap() {
   map.setOptions({
     restriction: {
       latLngBounds: BOUNDS_RECT,
-      strictBounds: true
+      strictBounds: true,
     },
-    minZoom: 12
+    minZoom: 12,
   });
 
   new google.maps.Rectangle({
@@ -143,11 +192,13 @@ window.initMap = function initMap() {
   const info = new google.maps.InfoWindow();
   const bounds = new google.maps.LatLngBounds();
 
-  PLACES.forEach(p => {
+  PLACES.forEach((p) => {
     const pos = { lat: p.lat, lng: p.lng };
     const marker = new google.maps.Marker({ position: pos, map, title: p.title });
     marker.addListener("click", () => {
-      info.setContent(`<strong>${p.title}</strong><br/>${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}`);
+      info.setContent(
+        `<strong>${p.title}</strong><br/>${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}`
+      );
       info.open(map, marker);
     });
     bounds.extend(pos);
@@ -159,8 +210,7 @@ window.initMap = function initMap() {
       { lat: BOUNDS_RECT.north, lng: BOUNDS_RECT.east }
     )
   );
-  POLY_PATH.forEach(pt => finalBounds.extend(pt));
+  POLY_PATH.forEach((pt) => finalBounds.extend(pt));
 
   map.fitBounds(finalBounds);
 };
-

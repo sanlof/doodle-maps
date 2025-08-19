@@ -23,10 +23,18 @@
         <button id="save">Save</button>
       </div>
     </section>
+    <section class="upload">
+      <form id="upload-form">
+        <input type="file" id="file-input" accept="image/*" required />
+        <input type="text" id="name-input" placeholder="Ditt namn" required />
+        <button type="submit">Ladda upp</button>
+      </form>
+      <div id="status"></div>
+    </section>
 
     <!-- <div id="map"></div> -->
 
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
     <script
       async
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDdqsm7qQQ5AKqyyE_c42hYzZJN_UiHBG4&callback=initMap"
