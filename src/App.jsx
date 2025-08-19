@@ -6,8 +6,8 @@ import Toolbar from "./components/Toolbar.jsx";
 export default function App() {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
-  const lineWidthRef = useRef(5);
-  const lineColorRef = useRef("#ff0000");
+  const lineWidthRef = useRef(2);
+  const lineColorRef = useRef("#000000");
 
   const getBlob = async () => {
     if (!canvasRef.current?.getBlob) {

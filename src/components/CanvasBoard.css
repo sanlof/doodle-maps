@@ -1,21 +1,10 @@
-.drawing-area {
-  height: 40rem;
-  width: 40rem;
-  border: solid black 1px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.canvas-board {
+  background-color: #fff6a7;
+  margin-bottom: 1rem;
 }
 
-.board {
-  width: 30rem;
-  height: 30rem;
-  position: relative;
-  border: solid red 1px;
-}
-
-.board canvas {
+.canvas-board canvas {
   width: 100%;
-  height: 100%;
+  aspect-ratio: 1;
   display: block;
 }
