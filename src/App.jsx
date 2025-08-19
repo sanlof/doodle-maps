@@ -22,7 +22,6 @@ export default function App() {
         display: "grid",
         gridTemplateRows: "auto 1fr auto",
         gap: "1rem",
-        minHeight: "100dvh",
         padding: "1rem",
       }}
     >
@@ -30,17 +29,7 @@ export default function App() {
         <h1>Doodle maps</h1>
       </header>
 
-      <section
-        style={{
-          border: "1px solid #e5e7eb",
-          borderRadius: 8,
-          padding: "0.5rem",
-          minHeight: "60vh",
-          display: "grid",
-        }}
-      >
-        <CanvasBoard ref={canvasRef} />
-      </section>
+      <CanvasBoard ref={canvasRef} />
 
       <footer>
         <UploadForm getBlob={getBlob} onUploaded={clearAfterUpload} />

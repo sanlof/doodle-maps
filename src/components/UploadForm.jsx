@@ -37,8 +37,6 @@ export default function UploadForm({ getBlob }) {
         setStatus("Uppladdad, men metadata-fel: " + dbError.message);
       } else {
         setStatus("Drawing saved! ✅");
-        // valfritt:
-        // setName('')
       }
     } catch (err) {
       console.error(err);
@@ -58,7 +56,7 @@ export default function UploadForm({ getBlob }) {
     >
       <input
         type="text"
-        placeholder="Ditt namn"
+        placeholder="Your name"
         value={name}
         onChange={(e) => setName(e.target.value)}
         required
