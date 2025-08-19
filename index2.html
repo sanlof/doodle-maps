@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Doodle Maps</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <section class="upload">
+      <form id="upload-form">
+        <input type="file" id="file-input" accept="image/*" required />
+        <input type="text" id="name-input" placeholder="Ditt namn" required />
+        <button type="submit">Ladda upp</button>
+      </form>
+      <div id="status"></div>
+    </section>
+    <section class="gallery" id="gallery"></section>
+
+    <script type="module" src="script.js"></script>
+  </body>
+</html>
