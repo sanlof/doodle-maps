@@ -45,27 +45,16 @@ export default function UploadForm({ getBlob }) {
   };
 
   return (
-    <form
-      onSubmit={handleUpload}
-      style={{
-        display: "flex",
-        gap: "0.5rem",
-        alignItems: "center",
-        flexWrap: "wrap",
-      }}
-    >
+    <form onSubmit={handleUpload}>
       <input
         type="text"
         placeholder="Your name"
         value={name}
         onChange={(e) => setName(e.target.value)}
         required
-        style={{ flex: "1 1 220px" }}
       />
-      <button type="submit">Ladda upp</button>
-      <div aria-live="polite" style={{ width: "100%" }}>
-        {status}
-      </div>
+      <button type="submit">Save</button>
+      <div>{status}</div>
     </form>
   );
 }

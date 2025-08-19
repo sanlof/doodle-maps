@@ -17,23 +17,10 @@ export default function App() {
   };
 
   return (
-    <main
-      style={{
-        display: "grid",
-        gridTemplateRows: "auto 1fr auto",
-        gap: "1rem",
-        padding: "1rem",
-      }}
-    >
-      <header>
-        <h1>Doodle maps</h1>
-      </header>
-
+    <main>
+      <h1>Doodle maps</h1>
       <CanvasBoard ref={canvasRef} />
-
-      <footer>
-        <UploadForm getBlob={getBlob} onUploaded={clearAfterUpload} />
-      </footer>
+      <UploadForm getBlob={getBlob} onUploaded={clearAfterUpload} />
     </main>
   );
 }

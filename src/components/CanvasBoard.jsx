@@ -5,6 +5,7 @@ import React, {
   useImperativeHandle,
   useState,
 } from "react";
+import "./CanvasBoard.css";
 
 const CanvasBoard = forwardRef(function CanvasBoard(_, ref) {
   const canvasRef = useRef(null);
@@ -16,21 +17,55 @@ const CanvasBoard = forwardRef(function CanvasBoard(_, ref) {
   const [stroke, setStroke] = useState("#000000");
   const [lineWidth, setLineWidth] = useState(5);
 
+  // Hantera canvas-resize separat så att context state inte tappas
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    function resizeCanvasAndOffset() {
+      const parent = canvas.parentElement;
+
+      // Viktigt: sätt *attribut* till samma pixlar som CSS ger
+      const style = getComputedStyle(parent);
+      const width = parseInt(style.width, 10);
+      const height = parseInt(style.height, 10);
+
+      // Spara gammal bild
+      const old = ctxRef.current?.getImageData?.(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
+
+      canvas.width = width;
+      canvas.height = height;
+
+      if (old) {
+        ctxRef.current.putImageData(old, 0, 0);
+      }
+
+      // Uppdatera offset
+      const rect = canvas.getBoundingClientRect();
+      offsetRef.current = { x: rect.left, y: rect.top };
+
+      // Återställ context settings
+      if (ctxRef.current) {
+        ctxRef.current.lineCap = "round";
+        ctxRef.current.strokeStyle = stroke;
+        ctxRef.current.lineWidth = lineWidthRef.current;
+      }
+    }
+
+    resizeCanvasAndOffset();
+    window.addEventListener("resize", resizeCanvasAndOffset);
+    return () => {
+      window.removeEventListener("resize", resizeCanvasAndOffset);
+    };
+  }, [stroke, lineWidth]);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d", { willReadFrequently: false });
     ctxRef.current = ctx;
-
-    const parent = canvas.parentElement;
-    canvas.width = parent.clientWidth;
-    canvas.height = parent.clientHeight;
-
-    const updateOffset = () => {
-      const rect = canvas.getBoundingClientRect();
-      offsetRef.current = { x: rect.left, y: rect.top };
-    };
-    updateOffset();
-    window.addEventListener("resize", updateOffset);
 
     const getXY = (e) => {
       if (e.touches && e.touches[0]) {
@@ -78,7 +113,6 @@ const CanvasBoard = forwardRef(function CanvasBoard(_, ref) {
     canvas.addEventListener("touchmove", draw, { passive: false });
 
     return () => {
-      window.removeEventListener("resize", updateOffset);
       canvas.removeEventListener("mousedown", startPainting);
       canvas.removeEventListener("mouseup", stopPainting);
       canvas.removeEventListener("mousemove", draw);
@@ -111,31 +145,14 @@ const CanvasBoard = forwardRef(function CanvasBoard(_, ref) {
   }));
 
   return (
-    <div
-      className="drawing-area"
-      style={{ width: "100%", height: "60vh", display: "grid", gap: "0.5rem" }}
-    >
-      <div
-        className="toolbar"
-        style={{
-          display: "flex",
-          gap: "0.5rem",
-          alignItems: "center",
-          flexWrap: "wrap",
-        }}
-      >
+    <div className="drawing-area">
+      <div className="toolbar">
         <label htmlFor="stroke">Color</label>
         <input
           id="stroke"
           type="color"
           value={stroke}
           onChange={(e) => setStroke(e.target.value)}
-          style={{
-            width: "4rem",
-            padding: 0,
-            border: "none",
-            background: "none",
-          }}
         />
         <label htmlFor="lineWidth">Pen width</label>
         <input
@@ -149,18 +166,14 @@ const CanvasBoard = forwardRef(function CanvasBoard(_, ref) {
             setLineWidth(v);
             lineWidthRef.current = v;
           }}
-          style={{ width: 80 }}
         />
         <button type="button" onClick={() => ref?.current?.clear?.()}>
           Rensa
         </button>
       </div>
 
-      <div
-        className="board"
-        style={{ width: "100%", height: "100%", border: "1px solid #ddd" }}
-      >
-        <canvas ref={canvasRef} style={{ width: "100%", height: "100%" }} />
+      <div className="board">
+        <canvas ref={canvasRef} />
       </div>
     </div>
   );
