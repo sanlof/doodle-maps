@@ -69,6 +69,16 @@ function stopPainting() {
     ctx.beginPath();
 }
 
+// Spara canvas som png
+document.getElementById('save').addEventListener('click', () => {
+    const dataURL = canvas.toDataURL('image/png'); // konvertera canvas till PNG
+    const link = document.createElement('a');
+    link.href = dataURL;
+    link.download = 'drawing.png'; // filnamn
+    link.click();
+});
+
+
 // ---- Events för både mus och touch ----
 canvas.addEventListener('mousedown', startPainting);
 canvas.addEventListener('mouseup', stopPainting);
