@@ -10,8 +10,20 @@ canvas.height = window.innerHeight - canvasOffsetY;
 
 let isPainting = false;
 let lineWidth = 5;
-let startX;
-let startY;
+
+function getXY(e) {
+    if (e.touches) {
+        return {
+            x: e.touches[0].clientX - canvasOffsetX,
+            y: e.touches[0].clientY - canvasOffsetY
+        };
+    } else {
+        return {
+            x: e.clientX - canvasOffsetX,
+            y: e.clientY - canvasOffsetY
+        };
+    }
+}
 
 toolbar.addEventListener('click', e => {
     if (e.target.id === 'clear') {
@@ -23,35 +35,44 @@ toolbar.addEventListener('change', e => {
     if(e.target.id === 'stroke') {
         ctx.strokeStyle = e.target.value;
     }
-
     if(e.target.id === 'lineWidth') {
         lineWidth = e.target.value;
     }
-    
 });
 
-const draw = (e) => {
-    if(!isPainting) {
-        return;
-    }
+// Rita-funktion
+function draw(e) {
+    if (!isPainting) return;
+    e.preventDefault(); // stoppa scroll på mobil
+
+    const { x, y } = getXY(e);
 
     ctx.lineWidth = lineWidth;
     ctx.lineCap = 'round';
-
-    ctx.lineTo(e.clientX - canvasOffsetX, e.clientY);
+    ctx.lineTo(x, y);
     ctx.stroke();
 }
 
-canvas.addEventListener('mousedown', (e) => {
+// Start
+function startPainting(e) {
     isPainting = true;
-    startX = e.clientX;
-    startY = e.clientY;
-});
+    const { x, y } = getXY(e);
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+}
 
-canvas.addEventListener('mouseup', e => {
+// Slut
+function stopPainting() {
     isPainting = false;
     ctx.stroke();
     ctx.beginPath();
-});
+}
 
+// ---- Events för både mus och touch ----
+canvas.addEventListener('mousedown', startPainting);
+canvas.addEventListener('mouseup', stopPainting);
 canvas.addEventListener('mousemove', draw);
+
+canvas.addEventListener('touchstart', startPainting);
+canvas.addEventListener('touchend', stopPainting);
+canvas.addEventListener('touchmove', draw);
