@@ -1,38 +1,50 @@
-import React, { useState } from 'react'
-import CanvasBoard from './components/CanvasBoard.jsx'
-import UploadForm from './components/UploadForm.jsx'
-import Map from './components/Map.jsx'
+import React, { useRef } from "react";
+import CanvasBoard from "./components/CanvasBoard.jsx";
+import UploadForm from "./components/UploadForm.jsx";
 
 export default function App() {
-  const [showMap, setShowMap] = useState(false)
+  const canvasRef = useRef(null);
+
+  const getBlob = async () => {
+    if (!canvasRef.current?.getBlob) {
+      throw new Error("Canvas är inte redo ännu.");
+    }
+    return canvasRef.current.getBlob();
+  };
+
+  const clearAfterUpload = () => {
+    canvasRef.current?.clear?.();
+  };
 
   return (
-    <main>
-      <h1>Draw</h1>
-      <section className="drawing-area">
-        <div className="drawing-board">
-          <CanvasBoard />
-        </div>
-        <div id="toolbar">
-          <label htmlFor="stroke">Stroke</label>
-          <input id="stroke" name="stroke" type="color" />
-          <label htmlFor="lineWidth">Line Width</label>
-          <input id="lineWidth" name="lineWidth" type="number" defaultValue={5} />
-          <button id="clear" type="button">Clear</button>
-          <button id="save" type="button">Save</button>
-        </div>
+    <main
+      style={{
+        display: "grid",
+        gridTemplateRows: "auto 1fr auto",
+        gap: "1rem",
+        minHeight: "100dvh",
+        padding: "1rem",
+      }}
+    >
+      <header>
+        <h1>Doodle maps</h1>
+      </header>
+
+      <section
+        style={{
+          border: "1px solid #e5e7eb",
+          borderRadius: 8,
+          padding: "0.5rem",
+          minHeight: "60vh",
+          display: "grid",
+        }}
+      >
+        <CanvasBoard ref={canvasRef} />
       </section>
 
-      <section className="upload" style={{ marginTop: '1rem' }}>
-        <UploadForm />
-      </section>
-
-      <section style={{ marginTop: '1rem' }}>
-        <button type="button" onClick={() => setShowMap(v => !v)}>
-          {showMap ? 'Dölj karta' : 'Visa karta'}
-        </button>
-        {showMap && <div style={{ marginTop: '0.75rem' }}><Map /></div>}
-      </section>
+      <footer>
+        <UploadForm getBlob={getBlob} onUploaded={clearAfterUpload} />
+      </footer>
     </main>
-  )
+  );
 }
