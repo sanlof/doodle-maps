@@ -130,6 +130,12 @@ const CanvasBoard = forwardRef(function CanvasBoard(_, ref) {
           type="color"
           value={stroke}
           onChange={(e) => setStroke(e.target.value)}
+          style={{
+            width: "4rem",
+            padding: 0,
+            border: "none",
+            background: "none",
+          }}
         />
         <label htmlFor="lineWidth">Pen width</label>
         <input
