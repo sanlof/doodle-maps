@@ -1,13 +1,25 @@
+h1 {
+  color: black;
+}
+
 body {
   margin: 0;
   padding: 0;
   height: 100%;
   overflow: hidden;
-  color: white;
 }
 
-.container {
-  height: 100%;
+.drawing-area {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.drawing-board {
+  height: 30rem;
+  width: 30rem;
+  border: solid red 2px;
   display: flex;
 }
 
@@ -16,7 +28,6 @@ body {
   flex-direction: column;
   padding: 5px;
   width: 70px;
-  background-color: #202020;
 }
 
 #toolbar * {
