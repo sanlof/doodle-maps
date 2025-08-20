@@ -180,6 +180,24 @@ export default function Toolbar({
         </label>
 
         <input
+          id="lineColorWhite"
+          name="lineColor"
+          type="radio"
+          value="#ffffff"
+        />
+        <label htmlFor="lineColorWhite">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+          >
+            <circle cx="10" cy="10" r="10" fill="#ffffff" />
+          </svg>
+        </label>
+
+        <input
           id="lineColorBlue"
           name="lineColor"
           type="radio"
@@ -271,7 +289,7 @@ export default function Toolbar({
       </fieldset>
 
       <button id="clear" type="button">
-        Clear
+        Clear canvas
       </button>
     </form>
   );
