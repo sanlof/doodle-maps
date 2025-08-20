@@ -2,12 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useProximityRouter from "../hooks/useProximityRouter";
 
-// --- PLACES & helpers (din befintliga lista) ---
 const PLACE = { title: "Gulan", lat: 57.706083, lng: 11.936422 };
 const PLACES = [PLACE];
 
 function distanceMeters(a, b) {
-  const R = 6371e3; // jordradie i meter
+  const R = 6371e3;
   const toRad = (d) => (d * Math.PI) / 180;
   const dLat = toRad(b.lat - a.lat);
   const dLng = toRad(b.lng - a.lng);
@@ -29,7 +28,7 @@ export default function Map() {
   const [userCircle, setUserCircle] = useState(null);
 
   // Starta geofencing som navigerar när man är nära
-  const RADIUS_METERS = 50; // justera efter behov
+  const RADIUS_METERS = 25; // justera efter behov
   const { position, geoError } = useProximityRouter(PLACES, RADIUS_METERS);
   const navigatedRef = useRef(false);
   const navigate = useNavigate();
@@ -155,7 +154,7 @@ export default function Map() {
       userCircle.setRadius(RADIUS_METERS);
     }
 
-    // Kontrollera avstånd och navigera vid behov
+    // Kontrollera avstånd och routing till draw-sida
     PLACES.forEach((place) => {
       const distance = distanceMeters(position, place);
       if (distance <= RADIUS_METERS && !navigatedRef.current) {
