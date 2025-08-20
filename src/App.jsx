@@ -5,6 +5,7 @@ import Toolbar from "./components/Toolbar.jsx";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home.jsx";
 import Draw from "./pages/Draw.jsx";
+import Gallery from "./pages/Gallery.jsx";
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
         }
       />
       <Route path="/draw" element={<Draw />} />
+      <Route path="/gallery" element={<Gallery />} />
     </Routes>
   );
 }
