@@ -3,9 +3,13 @@ import React from "react";
 export default function useCountdown(targetHHmm = "14:30") {
   const [now, setNow] = React.useState(() => Date.now());
 
-  // Gör om "HH:mm" till nästa Date i framtiden (lokal tidszon)
+  // Om targetHHmm är ett Date-objekt, använd det direkt
   const getNextTarget = React.useCallback(() => {
-    const [hh, mm] = targetHHmm.split(":").map(Number);
+    if (targetHHmm instanceof Date) {
+      return targetHHmm;
+    }
+    // Annars förväntas en HH:mm-sträng
+    const [hh, mm] = String(targetHHmm).split(":").map(Number);
     const t = new Date();
     t.setHours(hh, mm, 0, 0);
     if (t.getTime() <= Date.now()) {

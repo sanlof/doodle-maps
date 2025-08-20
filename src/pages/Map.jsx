@@ -3,8 +3,11 @@ import { useNavigate } from "react-router-dom";
 import useProximityRouter from "../hooks/useProximityRouter";
 import useCountdown from "../hooks/useCountdown";
 
-const PLACE = { title: "Gulan", lat: 57.706083, lng: 11.936422 };
-const PLACES = [PLACE];
+const PLACES = [
+  { title: "Gulan", lat: 57.706083, lng: 11.936422 },
+  { title: "Färjeläget", lat: 57.705747, lng: 11.939973 },
+  { title: "Alkemisten", lat: 57.708575, lng: 11.939821 },
+];
 
 function distanceMeters(a, b) {
   const R = 6371e3;
@@ -13,12 +16,16 @@ function distanceMeters(a, b) {
   const dLng = toRad(b.lng - a.lng);
   const lat1 = toRad(a.lat);
   const lat2 = toRad(b.lat);
-
   const h =
     Math.sin(dLat / 2) ** 2 +
     Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
-
   return 2 * R * Math.asin(Math.sqrt(h));
+}
+
+function getNextTarget(minutes = 30) {
+  const now = new Date();
+  now.setMinutes(now.getMinutes() + minutes);
+  return now;
 }
 
 export default function Map() {
@@ -28,22 +35,33 @@ export default function Map() {
   const [userMarker, setUserMarker] = useState(null);
   const [userCircle, setUserCircle] = useState(null);
 
-  // Starta geofencing som navigerar när man är nära
-  const RADIUS_METERS = 25; // justera efter behov
+  const [targetDate, setTargetDate] = useState(getNextTarget(30));
+
+  // Använd din countdown-hook men med ett datumobjekt istället för klockslag
+  const { formatted, isOver } = useCountdown(targetDate);
+
+  // Byt plats & starta om countdown när den är över
+  useEffect(() => {
+    if (!isOver) return;
+
+    setCurrentIndex((i) => (i + 1) % PLACES.length); // byt plats
+    setTargetDate(getNextTarget(30)); // starta om nedräkning
+  }, [isOver]);
+
+  // 🔁 Håll reda på aktuell plats
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const currentPlace = PLACES[currentIndex];
+
+  // Geofencing & routing (du kan låta den vara mot alla PLACES om du vill)
+  const RADIUS_METERS = 25;
   const { position, geoError } = useProximityRouter(PLACES, RADIUS_METERS);
   const navigatedRef = useRef(false);
   const navigate = useNavigate();
 
-  // Ändra klockslag för countdown (HH:mm)
-  const { formatted, isOver, targetDate } = useCountdown("14:30");
-
   // Dynamisk laddning av Google Maps-script
   function loadGoogleMaps(apiKey) {
     return new Promise((resolve, reject) => {
-      if (window.google && window.google.maps) {
-        resolve();
-        return;
-      }
+      if (window.google && window.google.maps) return resolve();
       const script = document.createElement("script");
       script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}`;
       script.async = true;
@@ -52,6 +70,9 @@ export default function Map() {
       document.body.appendChild(script);
     });
   }
+
+  // Håll en ref till cirkeln för aktuell plats, så vi kan flytta den
+  const placeCircleRef = useRef(null);
 
   useEffect(() => {
     const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
@@ -66,8 +87,6 @@ export default function Map() {
     loadGoogleMaps(apiKey)
       .then(() => {
         const google = window.google;
-        const bounds = new google.maps.LatLngBounds();
-        PLACES.forEach((p) => bounds.extend({ lat: p.lat, lng: p.lng }));
 
         map = new google.maps.Map(mapRef.current, {
           mapTypeControl: false,
@@ -75,6 +94,8 @@ export default function Map() {
           fullscreenControl: true,
         });
 
+        // Markers
+        const info = new google.maps.InfoWindow();
         const svgIcon = `
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
   <g clip-path="url(#clip0_155_640)">
@@ -88,39 +109,40 @@ export default function Map() {
 </svg>
 `;
 
-        // Markers & info
-        const info = new google.maps.InfoWindow();
         PLACES.forEach((p) => {
-          const pos = { lat: p.lat, lng: p.lng };
-          const marker = new google.maps.Marker({
-            position: pos,
-            map,
-            title: p.title,
-            icon: {
-              url:
-                "data:image/svg+xml;charset=UTF-8," +
-                encodeURIComponent(svgIcon),
-              scaledSize: new google.maps.Size(48, 48),
-              anchor: new google.maps.Point(24, 24),
-            },
-          });
-          marker.addListener("click", () => {
-            info.setContent(
-              `<strong>${p.title}</strong><br/>${p.lat.toFixed(
-                5
-              )}, ${p.lng.toFixed(5)}`
-            );
-            info.open(map, marker);
-          });
+          // Visa bara markören för aktuell plats
+          if (p === currentPlace) {
+            const pos = { lat: p.lat, lng: p.lng };
+            const marker = new google.maps.Marker({
+              position: pos,
+              map,
+              title: p.title,
+              icon: {
+                url:
+                  "data:image/svg+xml;charset=UTF-8," +
+                  encodeURIComponent(svgIcon),
+                scaledSize: new google.maps.Size(48, 48),
+                anchor: new google.maps.Point(24, 24),
+              },
+            });
+            marker.addListener("click", () => {
+              info.setContent(
+                `<strong>${p.title}</strong><br/>${p.lat.toFixed(
+                  5
+                )}, ${p.lng.toFixed(5)}`
+              );
+              info.open(map, marker);
+            });
+          }
         });
 
-        map.setCenter({ lat: PLACE.lat, lng: PLACE.lng });
+        // Center + cirkel för AKTUELL plats
+        map.setCenter({ lat: currentPlace.lat, lng: currentPlace.lng });
         map.setZoom(17);
 
-        // Rita cirkel kring platsen
-        new google.maps.Circle({
+        placeCircleRef.current = new google.maps.Circle({
           map,
-          center: { lat: PLACE.lat, lng: PLACE.lng },
+          center: { lat: currentPlace.lat, lng: currentPlace.lng },
           radius: RADIUS_METERS,
           strokeOpacity: 0.6,
           strokeWeight: 1,
@@ -135,13 +157,48 @@ export default function Map() {
           "Kunde inte ladda Google Maps. Kontrollera API-nyckeln och nätverket."
         );
       });
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // init en gång
 
-  // Rita/uppdatera användarens position och radie
+  // ⏱️ När countdown når noll → växla plats
+  useEffect(() => {
+    if (!isOver) return;
+    // Växla till nästa plats i listan
+    setCurrentIndex((i) => (i + 1) % PLACES.length);
+    // Här kan du ev. trigga en reset av countdown om din hook stödjer det
+  }, [isOver]);
+
+  // 🔄 När currentIndex ändras (eller kartan är på plats), uppdatera center + cirkel
+  useEffect(() => {
+    if (!googleMap) return;
+    const google = window.google;
+
+    // Recenter
+    googleMap.panTo({ lat: currentPlace.lat, lng: currentPlace.lng });
+
+    // Flytta/återskapa cirkeln för aktuell plats
+    if (placeCircleRef.current) {
+      placeCircleRef.current.setCenter({
+        lat: currentPlace.lat,
+        lng: currentPlace.lng,
+      });
+      placeCircleRef.current.setRadius(RADIUS_METERS);
+    } else {
+      placeCircleRef.current = new google.maps.Circle({
+        map: googleMap,
+        center: { lat: currentPlace.lat, lng: currentPlace.lng },
+        radius: RADIUS_METERS,
+        strokeOpacity: 0.6,
+        strokeWeight: 1,
+        fillOpacity: 0.08,
+      });
+    }
+  }, [googleMap, currentIndex]); // uppdatera vid platsbyte
+
+  // 🧭 Rita/uppdatera användarens position och radie
   useEffect(() => {
     if (!googleMap || !position) return;
     const google = window.google;
-
     const latLng = new google.maps.LatLng(position.lat, position.lng);
 
     if (!userMarker) {
@@ -178,7 +235,7 @@ export default function Map() {
       userCircle.setRadius(RADIUS_METERS);
     }
 
-    // Kontrollera avstånd och routing till draw-sida
+    // Routing om nära någon av platserna
     PLACES.forEach((place) => {
       const distance = distanceMeters(position, place);
       if (distance <= RADIUS_METERS && !navigatedRef.current) {
@@ -192,9 +249,10 @@ export default function Map() {
     <div className="map-wrap">
       <div className="countdown">
         {isOver
-          ? "Time to draw!"
+          ? `Ny plats vald: ${currentPlace.title}`
           : `Time remaining to reveal new location: ${formatted}`}
       </div>
+
       <div>
         {(error || geoError) && (
           <p role="alert">
