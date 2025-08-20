@@ -1,44 +1,54 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useProximityRouter from "../hooks/useProximityRouter";
 
-const PLACES = [
-  { title: "Gulan", lat: 57.706083, lng: 11.936422 },
-  { title: "Färjeläget", lat: 57.705747, lng: 11.939973 },
-  { title: "Alkemisten", lat: 57.708575, lng: 11.939821 },
-];
+// --- PLACES & helpers (din befintliga lista) ---
+const PLACE = { title: "Gulan", lat: 57.706083, lng: 11.936422 };
+const PLACES = [PLACE];
 
-const BOUNDS_RECT = {
-  south: 57.701662,
-  west: 11.926414,
-  north: 57.712025,
-  east: 11.942035,
-};
+function distanceMeters(a, b) {
+  const R = 6371e3; // jordradie i meter
+  const toRad = (d) => (d * Math.PI) / 180;
+  const dLat = toRad(b.lat - a.lat);
+  const dLng = toRad(b.lng - a.lng);
+  const lat1 = toRad(a.lat);
+  const lat2 = toRad(b.lat);
 
-// Helper to load Google Maps script once
-function loadGoogleMaps(apiKey) {
-  return new Promise((resolve, reject) => {
-    if (window.google && window.google.maps) return resolve();
-    const existing = document.querySelector("script[data-gmaps]");
-    if (existing) {
-      existing.addEventListener("load", () => resolve());
-      existing.addEventListener("error", reject);
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}`;
-    script.async = true;
-    script.defer = true;
-    script.setAttribute("data-gmaps", "1");
-    script.onload = () => resolve();
-    script.onerror = (e) => reject(e);
-    document.head.appendChild(script);
-  });
+  const h =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+
+  return 2 * R * Math.asin(Math.sqrt(h));
 }
 
 export default function Map() {
   const mapRef = useRef(null);
   const [error, setError] = useState("");
+  const [googleMap, setGoogleMap] = useState(null);
+  const [userMarker, setUserMarker] = useState(null);
+  const [userCircle, setUserCircle] = useState(null);
+
+  // Starta geofencing som navigerar när man är nära
+  const RADIUS_METERS = 50; // justera efter behov
+  const { position, geoError } = useProximityRouter(PLACES, RADIUS_METERS);
+  const navigatedRef = useRef(false);
   const navigate = useNavigate();
+
+  // Dynamisk laddning av Google Maps-script
+  function loadGoogleMaps(apiKey) {
+    return new Promise((resolve, reject) => {
+      if (window.google && window.google.maps) {
+        resolve();
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}`;
+      script.async = true;
+      script.onload = resolve;
+      script.onerror = reject;
+      document.body.appendChild(script);
+    });
+  }
 
   useEffect(() => {
     const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
@@ -53,19 +63,16 @@ export default function Map() {
     loadGoogleMaps(apiKey)
       .then(() => {
         const google = window.google;
-
-        // 1) Skapa bounds från PLACES
         const bounds = new google.maps.LatLngBounds();
         PLACES.forEach((p) => bounds.extend({ lat: p.lat, lng: p.lng }));
 
-        // 2) Initiera kartan (center/zoom spelar mindre roll – vi kör fitBounds direkt efter)
         map = new google.maps.Map(mapRef.current, {
           mapTypeControl: false,
           streetViewControl: false,
           fullscreenControl: true,
         });
 
-        // 3) Markers + InfoWindow
+        // Markers & info
         const info = new google.maps.InfoWindow();
         PLACES.forEach((p) => {
           const pos = { lat: p.lat, lng: p.lng };
@@ -81,48 +88,23 @@ export default function Map() {
               )}, ${p.lng.toFixed(5)}`
             );
             info.open(map, marker);
-            // Navigera till en route för platsen
-            navigate(`/draw`);
           });
         });
 
-        // 4) Valfri buffer runt rektangeln så den inte klibbar mot kanterna
-        const ne = bounds.getNorthEast();
-        const sw = bounds.getSouthWest();
-        const margin = 0.005; // ~150 m beroende på latitud, justera efter behov
-        const rectBounds = {
-          north: ne.lat() + margin,
-          east: ne.lng() + margin,
-          south: sw.lat() - margin,
-          west: sw.lng() - margin,
-        };
+        map.setCenter({ lat: PLACE.lat, lng: PLACE.lng });
+        map.setZoom(17);
 
-        // 5) Rita rektangeln baserat på PLACES
-        new google.maps.Rectangle({
-          bounds: rectBounds, // kan även vara direkt `bounds`
+        // Rita cirkel kring platsen
+        new google.maps.Circle({
           map,
-          strokeColor: "#1a73e8",
-          strokeWeight: 2,
-          fillColor: "#1a73e8",
+          center: { lat: PLACE.lat, lng: PLACE.lng },
+          radius: RADIUS_METERS,
+          strokeOpacity: 0.6,
+          strokeWeight: 1,
           fillOpacity: 0.08,
-          clickable: false,
         });
 
-        // 6) Zooma/panorera så allt syns, med padding
-        map.fitBounds(bounds, {
-          top: 80,
-          right: 80,
-          bottom: 80,
-          left: 80,
-        });
-
-        // 7) (Valfritt) Begränsa panorering till samma yta
-        map.setOptions({
-          restriction: {
-            latLngBounds: rectBounds, // eller `bounds.toJSON()`
-            strictBounds: true,
-          },
-        });
+        setGoogleMap(map);
       })
       .catch((e) => {
         console.error(e);
@@ -130,13 +112,67 @@ export default function Map() {
           "Kunde inte ladda Google Maps. Kontrollera API-nyckeln och nätverket."
         );
       });
-
-    return () => {};
   }, []);
+
+  // Rita/uppdatera användarens position och radie
+  useEffect(() => {
+    if (!googleMap || !position) return;
+    const google = window.google;
+
+    const latLng = new google.maps.LatLng(position.lat, position.lng);
+
+    if (!userMarker) {
+      const m = new google.maps.Marker({
+        map: googleMap,
+        position: latLng,
+        title: "Du är här",
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 6,
+          fillColor: "#4285F4",
+          fillOpacity: 1,
+          strokeWeight: 2,
+          strokeColor: "#fff",
+        },
+      });
+      setUserMarker(m);
+    } else {
+      userMarker.setPosition(latLng);
+    }
+
+    if (!userCircle) {
+      const c = new google.maps.Circle({
+        map: googleMap,
+        center: latLng,
+        radius: RADIUS_METERS,
+        strokeOpacity: 0.6,
+        strokeWeight: 1,
+        fillOpacity: 0.1,
+      });
+      setUserCircle(c);
+    } else {
+      userCircle.setCenter(latLng);
+      userCircle.setRadius(RADIUS_METERS);
+    }
+
+    // Kontrollera avstånd och navigera vid behov
+    PLACES.forEach((place) => {
+      const distance = distanceMeters(position, place);
+      if (distance <= RADIUS_METERS && !navigatedRef.current) {
+        navigatedRef.current = true;
+        navigate("/draw");
+      }
+    });
+  }, [googleMap, position]);
 
   return (
     <div>
-      {error && <p role="alert">{error}</p>}
+      {(error || geoError) && (
+        <p role="alert">
+          {error ||
+            `Geolocation-fel: ${geoError.message}. Säkerställ HTTPS och ge plats-tillstånd.`}
+        </p>
+      )}
       <div id="map" ref={mapRef} />
     </div>
   );
