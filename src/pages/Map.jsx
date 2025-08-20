@@ -24,8 +24,34 @@ function distanceMeters(a, b) {
 
 function getNextTarget(minutes = 30) {
   const now = new Date();
-  now.setMinutes(now.getMinutes() + minutes);
-  return now;
+  const min = now.getMinutes();
+  let next;
+  if (min < 30) {
+    next = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      now.getHours(),
+      30,
+      0,
+      0
+    );
+  } else {
+    next = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      now.getHours() + 1,
+      0,
+      0,
+      0
+    );
+  }
+  if (next.getTime() <= now.getTime()) {
+    // Om tiden är exakt nu, ta nästa intervall
+    next.setMinutes(next.getMinutes() + 30);
+  }
+  return next;
 }
 
 export default function Map() {
