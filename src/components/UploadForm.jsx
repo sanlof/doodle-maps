@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { supabase } from "../lib/supabaseClient.js";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 export default function UploadForm({ getBlob, onUploaded = () => {} }) {
   const [status, setStatus] = useState("");
