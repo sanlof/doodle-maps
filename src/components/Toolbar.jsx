@@ -202,28 +202,10 @@ export default function Toolbar({
         </label>
 
         <input
-          id="lineColorBlue"
-          name="lineColor"
-          type="radio"
-          value="#0D00FF"
-        />
-        <label htmlFor="lineColorBlue">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 20 20"
-            fill="none"
-          >
-            <circle cx="10" cy="10" r="10" fill="#0D00FF" />
-          </svg>
-        </label>
-
-        <input
           id="lineColorRed"
           name="lineColor"
           type="radio"
-          value="#FF0000"
+          value="#EA4335"
         />
         <label htmlFor="lineColorRed">
           <svg
@@ -233,7 +215,7 @@ export default function Toolbar({
             viewBox="0 0 20 20"
             fill="none"
           >
-            <circle cx="10" cy="10" r="10" fill="#FF0000" />
+            <circle cx="10" cy="10" r="10" fill="#EA4335" />
           </svg>
         </label>
 
@@ -241,7 +223,7 @@ export default function Toolbar({
           id="lineColorYellow"
           name="lineColor"
           type="radio"
-          value="#F2FF00"
+          value="#FBBC05"
         />
         <label htmlFor="lineColorYellow">
           <svg
@@ -251,7 +233,7 @@ export default function Toolbar({
             viewBox="0 0 20 20"
             fill="none"
           >
-            <circle cx="10" cy="10" r="10" fill="#F2FF00" />
+            <circle cx="10" cy="10" r="10" fill="#FBBC05" />
           </svg>
         </label>
 
@@ -259,7 +241,7 @@ export default function Toolbar({
           id="lineColorGreen"
           name="lineColor"
           type="radio"
-          value="#51CF28"
+          value="#35A402"
         />
         <label htmlFor="lineColorGreen">
           <svg
@@ -269,7 +251,24 @@ export default function Toolbar({
             viewBox="0 0 20 20"
             fill="none"
           >
-            <circle cx="10" cy="10" r="10" fill="#51CF28" />
+            <circle cx="10" cy="10" r="10" fill="#35A402" />
+          </svg>
+        </label>
+        <input
+          id="lineColorBlue"
+          name="lineColor"
+          type="radio"
+          value="#4285F4"
+        />
+        <label htmlFor="lineColorBlue">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+          >
+            <circle cx="10" cy="10" r="10" fill="#4285F4" />
           </svg>
         </label>
 

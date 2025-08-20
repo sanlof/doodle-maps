@@ -84,11 +84,11 @@ input#lineColorPicker + label > svg {
     from 180deg at 50% 50%,
     deepskyblue 0deg,
     hotpink 90deg,
-    orange 160deg,
-    yellow 200deg,
-    lightgreen 360deg
+    yellow 240deg,
+    lightgreen 300deg,
+    deepskyblue 360deg
   );
-  filter: saturate(3);
+  filter: saturate(1.2);
 }
 
 button#clear {
