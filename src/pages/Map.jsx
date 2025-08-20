@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const PLACES = [
   { title: "Gulan", lat: 57.706083, lng: 11.936422 },
@@ -37,6 +38,7 @@ function loadGoogleMaps(apiKey) {
 export default function Map() {
   const mapRef = useRef(null);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
@@ -79,6 +81,8 @@ export default function Map() {
               )}, ${p.lng.toFixed(5)}`
             );
             info.open(map, marker);
+            // Navigera till en route för platsen
+            navigate(`/draw`);
           });
         });
 
