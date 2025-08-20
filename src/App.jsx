@@ -2,40 +2,22 @@ import React, { useRef, useState } from "react";
 import CanvasBoard from "./components/CanvasBoard.jsx";
 import UploadForm from "./components/UploadForm.jsx";
 import Toolbar from "./components/Toolbar.jsx";
+import { Routes, Route, Navigate } from "react-router-dom";
+import Home from "./pages/Home.jsx";
+import Draw from "./pages/Draw.jsx";
 
 export default function App() {
-  const canvasRef = useRef(null);
-  const ctxRef = useRef(null);
-  const lineWidthRef = useRef(2);
-  const lineColorRef = useRef("#000000");
-
-  const getBlob = async () => {
-    if (!canvasRef.current?.getBlob) {
-      throw new Error("Canvas är inte redo ännu.");
-    }
-    return canvasRef.current.getBlob();
-  };
-
-  const clearAfterUpload = () => {
-    canvasRef.current?.clear?.();
-  };
-
   return (
-    <main>
-      <h1>Doodle maps</h1>
-      <CanvasBoard
-        canvasRef={canvasRef}
-        ctxRef={ctxRef}
-        lineWidthRef={lineWidthRef}
-        lineColorRef={lineColorRef}
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <>
+            <Home />
+          </>
+        }
       />
-      <Toolbar
-        canvasRef={canvasRef}
-        ctxRef={ctxRef}
-        lineWidthRef={lineWidthRef}
-        lineColorRef={lineColorRef}
-      />
-      <UploadForm getBlob={getBlob} onUploaded={clearAfterUpload} />
-    </main>
+      <Route path="/draw" element={<Draw />} />
+    </Routes>
   );
 }
