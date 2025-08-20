@@ -3,7 +3,6 @@ import { supabase } from "../lib/supabaseClient.js";
 import { useNavigate } from "react-router";
 
 export default function UploadForm({ getBlob, onUploaded = () => {} }) {
-  const [name, setName] = useState("");
   const [status, setStatus] = useState("");
   const navigate = useNavigate();
   const goToSuccess = () => {
@@ -14,17 +13,12 @@ export default function UploadForm({ getBlob, onUploaded = () => {} }) {
     e.preventDefault();
     setStatus("");
 
-    const trimmed = name.trim();
-    if (!trimmed) {
-      setStatus("Skriv in ditt namn först.");
-      return;
-    }
-
     try {
       setStatus("Judging masterpiece");
-      const blob = await getBlob(); // <-- här kraschade du tidigare
+      const blob = await getBlob();
 
-      const filePath = `uploads/${Date.now()}.png`;
+      const now = Date.now();
+      const filePath = `uploads/${now}.png`;
 
       setStatus("Uploading drawing…");
       const { error: uploadErr } = await supabase.storage
@@ -33,16 +27,17 @@ export default function UploadForm({ getBlob, onUploaded = () => {} }) {
       if (uploadErr) throw uploadErr;
 
       setStatus("Saving...");
-      const { error: dbError } = await supabase
-        .from("paintings_meta")
-        .insert({ file_path: filePath, artist_name: trimmed });
+      const { error: dbError } = await supabase.from("paintings_meta").insert({
+        file_path: filePath,
+        created_at: new Date(now).toISOString(),
+      });
 
       if (dbError) {
         setStatus("Uppladdad, men metadata-fel: " + dbError.message);
       } else {
         setStatus("Drawing saved! ✅");
         goToSuccess();
-        onUploaded?.(); // <--- rensa canvas efter lyckad uppladdning
+        onUploaded?.(); // rensa canvas
       }
     } catch (err) {
       console.error(err);
@@ -51,15 +46,10 @@ export default function UploadForm({ getBlob, onUploaded = () => {} }) {
   };
 
   return (
-    <form onSubmit={handleUpload}>
-      <input
-        type="text"
-        placeholder="Your name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        required
-      />
-      <button type="submit">Save</button>
+    <form id="upload-form" onSubmit={handleUpload}>
+      <button id="save-btn" type="submit">
+        Save
+      </button>
       <div>{status}</div>
     </form>
   );

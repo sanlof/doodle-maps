@@ -22,7 +22,6 @@ export default function Draw() {
 
   return (
     <main>
-      <h1>Doodle maps</h1>
       <CanvasBoard
         canvasRef={canvasRef}
         ctxRef={ctxRef}
