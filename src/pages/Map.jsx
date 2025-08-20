@@ -1,24 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 
 const PLACES = [
-  { title: "Punkt A", lat: 57.7046, lng: 11.965 },
-  { title: "Punkt B", lat: 57.706, lng: 11.9695 },
-  { title: "Punkt C", lat: 57.7022, lng: 11.9598 },
+  { title: "Gulan", lat: 57.706083, lng: 11.936422 },
+  { title: "Färjeläget", lat: 57.705747, lng: 11.939973 },
+  { title: "Alkemisten", lat: 57.708575, lng: 11.939821 },
 ];
 
 const BOUNDS_RECT = {
-  south: 57.698,
-  west: 11.952,
-  north: 57.709,
-  east: 11.975,
+  south: 57.701662,
+  west: 11.926414,
+  north: 57.712025,
+  east: 11.942035,
 };
-
-const POLY_PATH = [
-  { lat: 57.709, lng: 11.955 },
-  { lat: 57.7065, lng: 11.975 },
-  { lat: 57.7005, lng: 11.9725 },
-  { lat: 57.699, lng: 11.958 },
-];
 
 // Helper to load Google Maps script once
 function loadGoogleMaps(apiKey) {
@@ -58,39 +51,20 @@ export default function Map() {
     loadGoogleMaps(apiKey)
       .then(() => {
         const google = window.google;
+
+        // 1) Skapa bounds från PLACES
+        const bounds = new google.maps.LatLngBounds();
+        PLACES.forEach((p) => bounds.extend({ lat: p.lat, lng: p.lng }));
+
+        // 2) Initiera kartan (center/zoom spelar mindre roll – vi kör fitBounds direkt efter)
         map = new google.maps.Map(mapRef.current, {
-          center: { lat: 57.7046, lng: 11.965 },
-          zoom: 14,
           mapTypeControl: false,
           streetViewControl: false,
           fullscreenControl: true,
-          restriction: {
-            latLngBounds: BOUNDS_RECT,
-            strictBounds: true,
-          },
         });
 
-        new google.maps.Rectangle({
-          bounds: BOUNDS_RECT,
-          map,
-          strokeColor: "#1a73e8",
-          strokeWeight: 2,
-          fillColor: "#1a73e8",
-          fillOpacity: 0.08,
-        });
-
-        new google.maps.Polygon({
-          paths: POLY_PATH,
-          map,
-          strokeColor: "#e8711a",
-          strokeWeight: 2,
-          fillColor: "#e8711a",
-          fillOpacity: 0.08,
-        });
-
+        // 3) Markers + InfoWindow
         const info = new google.maps.InfoWindow();
-        const bounds = new google.maps.LatLngBounds();
-
         PLACES.forEach((p) => {
           const pos = { lat: p.lat, lng: p.lng };
           const marker = new google.maps.Marker({
@@ -106,11 +80,45 @@ export default function Map() {
             );
             info.open(map, marker);
           });
-          bounds.extend(pos);
         });
 
-        POLY_PATH.forEach((pt) => bounds.extend(pt));
-        map.fitBounds(bounds);
+        // 4) Valfri buffer runt rektangeln så den inte klibbar mot kanterna
+        const ne = bounds.getNorthEast();
+        const sw = bounds.getSouthWest();
+        const margin = 0.005; // ~150 m beroende på latitud, justera efter behov
+        const rectBounds = {
+          north: ne.lat() + margin,
+          east: ne.lng() + margin,
+          south: sw.lat() - margin,
+          west: sw.lng() - margin,
+        };
+
+        // 5) Rita rektangeln baserat på PLACES
+        new google.maps.Rectangle({
+          bounds: rectBounds, // kan även vara direkt `bounds`
+          map,
+          strokeColor: "#1a73e8",
+          strokeWeight: 2,
+          fillColor: "#1a73e8",
+          fillOpacity: 0.08,
+          clickable: false,
+        });
+
+        // 6) Zooma/panorera så allt syns, med padding
+        map.fitBounds(bounds, {
+          top: 80,
+          right: 80,
+          bottom: 80,
+          left: 80,
+        });
+
+        // 7) (Valfritt) Begränsa panorering till samma yta
+        map.setOptions({
+          restriction: {
+            latLngBounds: rectBounds, // eller `bounds.toJSON()`
+            strictBounds: true,
+          },
+        });
       })
       .catch((e) => {
         console.error(e);
