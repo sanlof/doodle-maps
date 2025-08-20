@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useProximityRouter from "../hooks/useProximityRouter";
+import useCountdown from "../hooks/useCountdown";
 
 const PLACE = { title: "Gulan", lat: 57.706083, lng: 11.936422 };
 const PLACES = [PLACE];
@@ -32,6 +33,9 @@ export default function Map() {
   const { position, geoError } = useProximityRouter(PLACES, RADIUS_METERS);
   const navigatedRef = useRef(false);
   const navigate = useNavigate();
+
+  // Ändra klockslag för countdown (HH:mm)
+  const { formatted, isOver, targetDate } = useCountdown("14:30");
 
   // Dynamisk laddning av Google Maps-script
   function loadGoogleMaps(apiKey) {
@@ -185,14 +189,21 @@ export default function Map() {
   }, [googleMap, position]);
 
   return (
-    <div>
-      {(error || geoError) && (
-        <p role="alert">
-          {error ||
-            `Geolocation-fel: ${geoError.message}. Säkerställ HTTPS och ge plats-tillstånd.`}
-        </p>
-      )}
-      <div id="map" ref={mapRef} />
+    <div className="map-wrap">
+      <div className="countdown">
+        {isOver
+          ? "Time to draw!"
+          : `Time remaining to reveal new location: ${formatted}`}
+      </div>
+      <div>
+        {(error || geoError) && (
+          <p role="alert">
+            {error ||
+              `Geolocation-fel: ${geoError.message}. Säkerställ HTTPS och ge plats-tillstånd.`}
+          </p>
+        )}
+        <div id="map" ref={mapRef} />
+      </div>
     </div>
   );
 }
