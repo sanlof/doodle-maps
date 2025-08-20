@@ -22,7 +22,6 @@ export default function Toolbar({
 
     if (e.target.id === "rubber") {
       ctx.globalCompositeOperation = "destination-out";
-      lineColorRef.current = "transparent"; // doesn't really matter
       setActiveTool("rubber");
     }
 
