@@ -1,0 +1,23 @@
+.heading {
+  width: 100%;
+  text-align: center;
+}
+
+.gallery .buttons {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 0.3rem;
+}
+
+.gallery .paintings {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  justify-content: center;
+}
+.paintings img {
+  aspect-ratio: 1;
+  background: #ff9;
+}

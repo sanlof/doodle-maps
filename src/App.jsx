@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home.jsx";
 import Draw from "./pages/Draw.jsx";
+import Gallery from "./pages/Gallery.jsx";
 import Map from "./pages/Map.jsx";
 
 export default function App() {
@@ -15,6 +16,7 @@ export default function App() {
         }
       />
       <Route path="/draw" element={<Draw />} />
+      <Route path="/gallery" element={<Gallery />} />
       <Route path="/map" element={<Map />} />
     </Routes>
   );
