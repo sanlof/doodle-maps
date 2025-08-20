@@ -32,9 +32,13 @@ export default function Toolbar({
 
   const onToolbarClick = (e) => {
     if (e.target.id === "clear") {
-      const ctx = ctxRef.current;
-      const canvas = canvasRef.current;
-      if (ctx && canvas) ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (window.confirm("Do you really want to clear the canvas?")) {
+        const ctx = ctxRef.current;
+        const canvas = canvasRef.current;
+        if (ctx && canvas) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
     }
   };
 

@@ -101,6 +101,7 @@ button#clear {
   position: relative;
   bottom: -1.7rem;
   left: -1.25rem;
+  z-index: 2;
 }
 
 #upload-form {
