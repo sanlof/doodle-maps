@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import { supabase } from "../lib/supabaseClient.js";
+import { useNavigate } from "react-router";
 
 export default function UploadForm({ getBlob, onUploaded = () => {} }) {
   const [name, setName] = useState("");
   const [status, setStatus] = useState("");
+  const navigate = useNavigate();
+  const goToGallery = () => {
+    navigate("/gallery");
+  };
 
   const handleUpload = async (e) => {
     e.preventDefault();
@@ -36,6 +41,7 @@ export default function UploadForm({ getBlob, onUploaded = () => {} }) {
         setStatus("Uppladdad, men metadata-fel: " + dbError.message);
       } else {
         setStatus("Drawing saved! ✅");
+        goToGallery();
         onUploaded?.(); // <--- rensa canvas efter lyckad uppladdning
       }
     } catch (err) {
