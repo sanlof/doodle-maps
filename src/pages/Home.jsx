@@ -8,7 +8,7 @@ export default function Home() {
         <li>FAQ</li>
         <li>Help</li>
       </nav>
-      <img src="src/public/images/doodlemaps.png" alt="" />
+      <img src="public/images/doodlemaps.png" alt="Doodle Maps logo" />
       <button>Play</button>
     </div>
   );
