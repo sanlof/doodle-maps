@@ -9,6 +9,7 @@
   max-height: 5.5rem;
   padding: 0.6rem 1.25rem;
   margin-bottom: 1.5rem;
+  box-shadow: 2px 4px 6px 0 rgba(0, 0, 0, 0.25);
 }
 
 .toolbar fieldset {
@@ -82,11 +83,11 @@ input#lineColorPicker + label > svg {
   border-radius: 50%;
   background: conic-gradient(
     from 180deg at 50% 50%,
-    deepskyblue 0deg,
-    hotpink 90deg,
-    yellow 240deg,
-    lightgreen 300deg,
-    deepskyblue 360deg
+    #4285f4 0deg,
+    #ea4335 120deg,
+    #fbbc05 240deg,
+    #35a402 300deg,
+    #4285f4 360deg
   );
   filter: saturate(1.2);
 }
