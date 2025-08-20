@@ -1,5 +1,4 @@
-// Toolbar.jsx
-import React from "react";
+import React, { useState } from "react";
 import "./Toolbar.css";
 
 export default function Toolbar({
@@ -8,11 +7,23 @@ export default function Toolbar({
   canvasRef,
   lineColorRef,
 }) {
+  const [activeTool, setActiveTool] = useState("brush");
+
   const onToolbarChange = (e) => {
     if (!e.target) return;
 
+    const ctx = ctxRef.current;
+
     if (e.target.name === "lineColor") {
-      lineColorRef.current = e.target.value; // funkar för både rubber & color picker
+      ctx.globalCompositeOperation = "source-over";
+      lineColorRef.current = e.target.value;
+      setActiveTool("brush");
+    }
+
+    if (e.target.id === "rubber") {
+      ctx.globalCompositeOperation = "destination-out";
+      lineColorRef.current = "transparent"; // doesn't really matter
+      setActiveTool("rubber");
     }
 
     if (e.target.name === "lineWidth") {
@@ -97,7 +108,7 @@ export default function Toolbar({
 
       <fieldset className="tools">
         <legend>Tools</legend>
-        <input id="rubber" name="lineColor" type="radio" value="#ffffff" />
+        <input id="rubber" name="lineColor" type="radio" value="rubber" />
         <label htmlFor="rubber">
           <svg
             xmlns="http://www.w3.org/2000/svg"
