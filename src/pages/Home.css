@@ -26,7 +26,7 @@ img {
 }
 
 button {
-  width: 7.5rem;
+  width: 7rem;
   padding: 0.20263rem;
   align-items: center;
   border-radius: 1.15856rem;
@@ -35,4 +35,5 @@ button {
   font-family: "Klee One", cursive;
   font-size: 0.83419rem;
   border: 0;
+  text-transform: uppercase;
 }
