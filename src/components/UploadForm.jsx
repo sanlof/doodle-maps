@@ -6,8 +6,8 @@ export default function UploadForm({ getBlob, onUploaded = () => {} }) {
   const [name, setName] = useState("");
   const [status, setStatus] = useState("");
   const navigate = useNavigate();
-  const goToGallery = () => {
-    navigate("/gallery");
+  const goToSuccess = () => {
+    navigate("/success");
   };
 
   const handleUpload = async (e) => {
@@ -41,7 +41,7 @@ export default function UploadForm({ getBlob, onUploaded = () => {} }) {
         setStatus("Uppladdad, men metadata-fel: " + dbError.message);
       } else {
         setStatus("Drawing saved! ✅");
-        goToGallery();
+        goToSuccess();
         onUploaded?.(); // <--- rensa canvas efter lyckad uppladdning
       }
     } catch (err) {
