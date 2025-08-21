@@ -1,11 +1,34 @@
 .success {
+  margin: -1.25rem;
+  padding: 0 1.25rem;
   text-align: center;
   font-size: 1rem;
+  background: url(/images/sun.png) -4rem -3.5rem no-repeat,
+    url(/images/rat.png) right top no-repeat,
+    url(/images/painter.png) bottom right no-repeat,
+    url(/images/bikini.png) bottom left no-repeat;
+  background-size: 9rem 8.75rem, 5.8rem 5.8rem, 6.4rem 9.1rem, 3.5rem 5rem;
+  height: 100vh;
+  min-height: 667px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .success img {
-  width: 100%;
-  height: 100%;
+  width: 20rem;
+  height: auto;
+  padding: 0 3rem;
+}
+
+.success h1 {
+  font-size: 2.5rem;
+  margin: 1rem 0 0.5rem;
+}
+.success p {
+  font-size: 1rem;
+  margin: 0 0 1.25rem;
 }
 
 .success .buttons {
