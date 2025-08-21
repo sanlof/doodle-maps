@@ -262,11 +262,11 @@ export default function Map() {
 
   return (
     <div className="map-wrap">
-      <div className="current-place">
-        <strong>Aktuell plats:</strong> {currentPlace.title} &nbsp;–&nbsp;
-        <span>Byter om: {formatted}</span>
+      <div className="countdown">
+        {isOver
+          ? `Ny plats vald: ${currentPlace.title}`
+          : `Time remaining to reveal new location: ${formatted}`}
       </div>
-
       {(error || geoError) && (
         <p role="alert">
           {error
@@ -275,7 +275,7 @@ export default function Map() {
         </p>
       )}
 
-      <div id="map" ref={mapRef} style={{ width: "100%", height: "70vh" }} />
+      <div id="map" ref={mapRef} />
     </div>
   );
 }
