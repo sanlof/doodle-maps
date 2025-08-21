@@ -14,13 +14,12 @@ img {
 
 button {
   width: 7rem;
-  padding: 0.20263rem;
+  padding: 0.3rem;
   align-items: center;
   border-radius: 1.15856rem;
-  background: #84988a;
+  background: #35a402;
   color: #fff;
   font-family: "Klee One", cursive;
-  font-size: 0.83419rem;
+  font-size: 1rem;
   border: 0;
-  text-transform: uppercase;
 }
