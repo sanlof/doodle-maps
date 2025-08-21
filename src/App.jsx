@@ -5,6 +5,7 @@ import Draw from "./pages/Draw.jsx";
 import Success from "./pages/Success.jsx";
 import Gallery from "./pages/Gallery.jsx";
 import Map from "./pages/Map.jsx";
+import Popup from "./pages/Popup.jsx";
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
         <Route path="/success" element={<Success />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/map" element={<Map />} />
+        <Route path="/popup" element={<Popup />} />
       </Routes>
     </BrowserRouter>
   );

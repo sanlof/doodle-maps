@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useProximityRouter from "../hooks/useProximityRouter";
 import useCountdown from "../hooks/useCountdown";
+import Popup from "./Popup";
 
 const PLACES = [
   {
@@ -58,7 +59,7 @@ function getPlaceIndexByTime() {
 
 export default function Map() {
   const navigate = useNavigate();
-  const { position, geoError, navigatedRef } = useProximityRouter(); // din hook
+  const { position, geoError, navigatedRef } = useProximityRouter();
 
   const mapRef = useRef(null);
   const [error, setError] = useState("");
@@ -74,6 +75,10 @@ export default function Map() {
   const currentPlace = PLACES[currentIndex];
 
   const lastNavigateTimeRef = useRef(0);
+
+  // Popup state
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupPlace, setPopupPlace] = useState(null);
 
   // Nedräkning till nästa 30-minutersgräns
   const [targetDate, setTargetDate] = useState(getNextTarget(30));
@@ -210,7 +215,7 @@ export default function Map() {
     googleMap.panTo(center);
   }, [googleMap, currentIndex]);
 
-  // Rita/uppdatera användarens position och radie + routing om nära
+  // Rita/uppdatera användarens position och radie + visa popup om nära
   useEffect(() => {
     if (!googleMap || !position) return;
     const google = window.google;
@@ -260,8 +265,9 @@ export default function Map() {
         now - lastNavigateTimeRef.current > 10_000
       ) {
         lastNavigateTimeRef.current = now;
-        navigate("/draw");
-        break; // stoppa kollen för övriga platser
+        setPopupPlace(place);
+        setShowPopup(true);
+        break;
       }
     }
   }, [googleMap, position]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -282,6 +288,54 @@ export default function Map() {
       )}
 
       <div id="map" ref={mapRef} />
+
+      {/* Knapp för att testa pop-up */}
+      {/* <button
+        style={{
+          position: "absolute",
+          top: 16,
+          right: 16,
+          zIndex: 1100,
+          padding: "0.5rem 1rem",
+          background: "#4285F4",
+          color: "#fff",
+          border: "none",
+          borderRadius: "0.5rem",
+          cursor: "pointer",
+        }}
+        onClick={() => {
+          setPopupPlace(currentPlace);
+          setShowPopup(true);
+        }}
+      >
+        Visa popup (test)
+      </button> */}
+
+      {showPopup && popupPlace && (
+        <div
+          className="popup-overlay"
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(0,0,0,0.4)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+          }}
+        >
+          <Popup
+            title={popupPlace.title}
+            onStart={() => {
+              setShowPopup(false);
+              navigate("/draw");
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }

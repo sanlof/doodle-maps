@@ -1,0 +1,42 @@
+.popup-content {
+  border-radius: 1.5rem;
+  background-color: #f5f3f3;
+  box-shadow: 1px 2px 6px 0 rgba(0, 0, 0, 0.25);
+  display: flex;
+  width: 13.6875rem;
+  padding: 1.25rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8125rem;
+  position: relative;
+  overflow: hidden;
+}
+
+h2 {
+  font-size: 1.125rem;
+  text-align: center;
+}
+
+p {
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+button {
+  border-radius: 1.15856rem;
+  background: #35a402;
+  display: flex;
+  padding: 0.6875rem 0.9375rem;
+  justify-content: center;
+  align-items: center;
+}
+
+img {
+  width: 6.7905rem;
+  height: 9.60463rem;
+  transform: rotate(6.091deg);
+  aspect-ratio: 108.65/153.67;
+  position: absolute;
+  right: -3.89625rem;
+  bottom: -0.02094rem;
+}
