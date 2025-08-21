@@ -73,6 +73,8 @@ export default function Map() {
   const [currentIndex, setCurrentIndex] = useState(getPlaceIndexByTime());
   const currentPlace = PLACES[currentIndex];
 
+  const lastNavigateTimeRef = useRef(0);
+
   // Nedräkning till nästa 30-minutersgräns
   const [targetDate, setTargetDate] = useState(getNextTarget(30));
   const { formatted, isOver } = useCountdown(targetDate);
@@ -250,14 +252,18 @@ export default function Map() {
       userCircle.setRadius(RADIUS_METERS);
     }
 
-    // Routing om nära någon av platserna (enkel variant)
-    PLACES.forEach((place) => {
+    for (const place of PLACES) {
       const distance = distanceMeters(position, place);
-      if (distance <= RADIUS_METERS && !navigatedRef.current) {
-        navigatedRef.current = true;
+      const now = Date.now();
+      if (
+        distance <= RADIUS_METERS &&
+        now - lastNavigateTimeRef.current > 10_000
+      ) {
+        lastNavigateTimeRef.current = now;
         navigate("/draw");
+        break; // stoppa kollen för övriga platser
       }
-    });
+    }
   }, [googleMap, position]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
