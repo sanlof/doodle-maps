@@ -7,7 +7,7 @@ export default function Success() {
     navigate("/map");
   };
   const goToGallery = () => {
-    navigate("/gallery");
+    navigate("/gallery", { state: { from: "success" } });
   };
 
   return (
@@ -16,8 +16,12 @@ export default function Success() {
       <h1>Well done!</h1>
       <p>Your artwork has been saved in the gallery</p>
       <section className="buttons">
-        <button onClick={goToGallery}>Gallery</button>
-        <button onClick={goToMap}>Map</button>
+        <button className="button" onClick={goToGallery}>
+          Gallery
+        </button>
+        <button className="button" onClick={goToMap}>
+          Map
+        </button>
       </section>
     </section>
   );

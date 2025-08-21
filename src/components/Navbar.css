@@ -1,0 +1,13 @@
+.navbar {
+  padding: 0 0 1.25rem;
+}
+
+.navbar button.back-btn {
+  background: url(/icons/arrow-left.svg) no-repeat center;
+  height: 1.5rem;
+  width: 1.5rem;
+}
+
+.navbar img {
+  max-width: 1rem;
+}

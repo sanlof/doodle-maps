@@ -1,6 +1,7 @@
 import CanvasBoard from "../components/CanvasBoard";
 import Toolbar from "../components/Toolbar";
 import UploadForm from "../components/UploadForm";
+import Navbar from "../components/Navbar";
 import React, { useRef } from "react";
 
 export default function Draw() {
@@ -22,6 +23,7 @@ export default function Draw() {
 
   return (
     <main>
+      <Navbar />
       <CanvasBoard
         canvasRef={canvasRef}
         ctxRef={ctxRef}
