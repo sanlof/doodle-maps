@@ -44,7 +44,11 @@ export default function Toolbar({
     }
 
     if (e.target.id === "clear") {
-      if (window.confirm("Do you really want to clear the canvas?")) {
+      if (
+        window.confirm(
+          "Are you sure? The world will never see this work of art. You cannot undo this action."
+        )
+      ) {
         const ctx = ctxRef.current;
         const canvas = canvasRef.current;
         if (ctx && canvas) {

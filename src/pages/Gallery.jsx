@@ -40,7 +40,6 @@ export default function Gallery() {
       <Navbar backPath={backPath} />
       <section className="heading">
         <img src="/images/gallery.svg" alt="gallery" id="gallery-heading" />
-        <p>Double tap to star a doodle</p>
       </section>
       <section className="buttons">
         <button className="my-location">My Location</button>

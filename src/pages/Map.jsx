@@ -272,7 +272,7 @@ export default function Map() {
       window.alert(error);
     } else if (geoError) {
       window.alert(
-        `Geolocation-fel: ${geoError.message}. Säkerställ HTTPS och ge plats-tillstånd.`
+        `Geolocation-error: ${geoError.message}. You need to share your location in order to use this app.`
       );
     }
   }, [error, geoError]);

@@ -1,7 +1,7 @@
 .gallery {
   display: flex;
   flex-direction: column;
-  gap: 0.81rem;
+  gap: 1.2rem;
 }
 
 .heading {
@@ -48,7 +48,7 @@
 }
 .paintings img {
   background: #ff9;
-  width: 5.2rem;
-  height: 5.2rem;
+  width: 6.3rem;
+  height: 6.3rem;
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.25);
 }
