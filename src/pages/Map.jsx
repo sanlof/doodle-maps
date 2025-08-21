@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 import useProximityRouter from "../hooks/useProximityRouter";
 import useCountdown from "../hooks/useCountdown";
 import Popup from "./Popup";
@@ -266,16 +267,23 @@ export default function Map() {
     }
   }, [googleMap, position, currentPlaces]);
 
+  useEffect(() => {
+    if (error) {
+      window.alert(error);
+    } else if (geoError) {
+      window.alert(
+        `Geolocation-fel: ${geoError.message}. Säkerställ HTTPS och ge plats-tillstånd.`
+      );
+    }
+  }, [error, geoError]);
+
   return (
     <div className="map-wrap">
-      <div className="countdown">{`Doodle Spots refresh in: ${formatted}`}</div>
-
-      {(error || geoError) && (
-        <p role="alert">
-          {error ??
-            `Geolocation-fel: ${geoError.message}. Säkerställ HTTPS och ge plats-tillstånd.`}
-        </p>
-      )}
+      <Navbar backPath="/" />
+      <div className="countdown">
+        <div className="doodle-refresh-line">{`Doodle Spots refresh in:`}</div>
+        <div className="doodle-refresh-time">{formatted}</div>
+      </div>
 
       <div id="map" ref={mapRef} />
 
