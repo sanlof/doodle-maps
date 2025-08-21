@@ -134,6 +134,7 @@ This project is open source and available under the [MIT License](LICENSE).
 Created by student web developers and UX-designers at Yrgo.
 
 Development: Filip Lyrheden and Sandra Löfgren
+
 UX-design: Sarwat Ghalib, Herman Bundy and Amanda Aldenbring
 
 ---
