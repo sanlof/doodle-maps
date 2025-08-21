@@ -1,16 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Klee+One&display=swap");
-
-.container {
-  display: flex;
-  flex-direction: column;
-  padding: 6.9375rem 2.125rem;
-  justify-content: center;
-  align-items: center;
-  align-content: center;
-  flex-wrap: wrap;
-  gap: 4rem;
-}
-
 nav {
   list-style: none;
   display: flex;
