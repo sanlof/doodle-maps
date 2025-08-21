@@ -38,12 +38,12 @@ fieldset.colors {
 }
 
 .toolbar input[type="radio"] + label,
+.toolbar input[type="hidden"] + label,
 .toolbar input[type="color"] + label {
   display: flex;
   align-items: center;
   justify-content: center;
   aspect-ratio: 1;
-  border: 0px solid #ccc;
   border-radius: 0.5rem;
   padding: 0.3rem;
 }
@@ -71,9 +71,6 @@ input#lineColorPicker:checked + label {
 }
 
 input#lineColorPicker {
-  visibility: hidden;
-  width: 0px;
-  height: 0px;
   padding: 0;
   margin: 0;
   position: absolute;
