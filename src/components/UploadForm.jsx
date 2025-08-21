@@ -47,7 +47,7 @@ export default function UploadForm({ getBlob, onUploaded = () => {} }) {
 
   return (
     <form id="upload-form" onSubmit={handleUpload}>
-      <button id="save-btn" type="submit">
+      <button className="button" id="save-btn" type="submit">
         Save
       </button>
       <div>{status}</div>
