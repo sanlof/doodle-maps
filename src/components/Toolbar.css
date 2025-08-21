@@ -6,7 +6,7 @@
   column-gap: 0.7rem;
   border-radius: 0.5rem;
   background: #fff;
-  max-height: 5.5rem;
+  max-height: 6rem;
   padding: 0.6rem 1.25rem;
   margin-bottom: 1.5rem;
   box-shadow: 2px 4px 6px 0 rgba(0, 0, 0, 0.25);
@@ -87,6 +87,21 @@ button#clear {
   left: -1.25rem;
   z-index: 2;
 }
+button#undo,
+button#redo {
+  height: 2.5rem;
+  width: 2.5rem;
+  display: block;
+  text-indent: -9999px;
+}
+button#undo {
+  background: url(/icons/undo.svg) no-repeat;
+  background-position: center center;
+}
+button#redo {
+  background: url(/icons/redo.svg) no-repeat;
+  background-position: center center;
+}
 
 #upload-form {
   max-width: 100%;
@@ -97,7 +112,9 @@ button#clear {
 }
 
 .colors label,
-.tools label {
+.tools label,
+button#undo,
+button#redo {
   display: flex;
   align-items: center;
   justify-content: center;
