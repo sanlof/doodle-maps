@@ -8,7 +8,9 @@ export default function Popup({ title, onStart }) {
         Look around you for inspiration and share your artwork with the rest of
         Lindholmen!
       </p>
-      <button onClick={onStart}>Start drawing</button>
+      <button onClick={onStart} className="popup-button">
+        Start drawing
+      </button>
       <img src="images/dog.png" className="dog-img"></img>
     </div>
   );

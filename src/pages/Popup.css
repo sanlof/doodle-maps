@@ -22,7 +22,7 @@ p {
   text-align: center;
 }
 
-button {
+.popup-button {
   border-radius: 1.15856rem;
   background: #35a402;
   display: flex;
