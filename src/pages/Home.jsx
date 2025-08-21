@@ -4,6 +4,9 @@ import { useNavigate } from "react-router-dom";
 export default function Home() {
   const navigate = useNavigate();
 
+  const goToGallery = () => {
+    navigate("/gallery");
+  };
   const goToMap = () => {
     navigate("/map");
   };
@@ -27,7 +30,9 @@ export default function Home() {
         </p>
       </div>
       <div className="home-buttons">
-        <button className="button">Gallery</button>
+        <button onClick={goToGallery} className="button">
+          Gallery
+        </button>
         <button onClick={goToMap} className="button">
           Play
         </button>
