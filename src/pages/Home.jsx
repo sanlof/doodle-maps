@@ -18,7 +18,7 @@ export default function Home() {
         <h2 className="how-to-heading">How to play:</h2>
         <p className="how-to-text">
           1: Pick a Spot! The Map shows several Doodle Spots that refresh every
-          4 hours.
+          30 minutes.
         </p>
         <p className="how-to-text">
           2: Time to Doodle! Upon arrival, check out your surroundings and draw
