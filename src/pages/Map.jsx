@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 import useProximityRouter from "../hooks/useProximityRouter";
 import useCountdown from "../hooks/useCountdown";
 import Popup from "./Popup";
@@ -268,7 +269,11 @@ export default function Map() {
 
   return (
     <div className="map-wrap">
-      <div className="countdown">{`Doodle Spots refresh in: ${formatted}`}</div>
+      <Navbar backPath="/" />
+      <div className="countdown">
+        <div className="doodle-refresh-line">{`Doodle Spots refresh in:`}</div>
+        <div className="doodle-refresh-time">{formatted}</div>
+      </div>
 
       {(error || geoError) && (
         <p role="alert">
