@@ -1,27 +1,51 @@
-nav {
-  list-style: none;
+body {
+  background-color: #f5f3f3;
+  padding: 2rem;
+}
+
+.container {
   display: flex;
-  flex-direction: row;
-  gap: 1rem;
-  color: black;
-  font-family: "Klee One", cursive;
-  font-size: 1.25rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.625rem;
 }
 
 img {
   height: 8rem;
 }
 
-button {
-  border: none;
-  font-family: "Klee One", cursive;
+.how-to {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.5rem;
+}
+
+.how-to-heading {
+  color: #000;
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+.how-to-text {
+  color: #000;
+  font-size: 1rem;
+}
+
+.home-buttons {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-content: center;
+  padding: 0 1rem;
 }
 
 .button {
-  width: 7rem;
-  padding: 0.3rem;
-  align-items: center;
-  border-radius: 1.15856rem;
+  width: 6.25rem;
+  height: 2.0625rem;
+  padding: 0.6875rem 0.9375rem;
+  border-radius: 0.875rem;
   background: #35a402;
   color: #fff;
   font-size: 1rem;
