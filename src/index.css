@@ -22,6 +22,7 @@ body {
 }
 
 button {
+  border: none;
   font-family: "klee one", sans-serif;
   display: flex;
   justify-content: center;
