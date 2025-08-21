@@ -9,7 +9,7 @@ export default function Gallery() {
     const fetchImages = async () => {
       const { data, error } = await supabase.storage
         .from("paintings")
-        .list("uploads");
+        .list("uploads", { sortBy: { column: "created_at", order: "desc" } });
       if (error) return console.error(error);
 
       const urls = data.map((file) => {
