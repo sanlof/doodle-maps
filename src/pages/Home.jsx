@@ -12,8 +12,12 @@ export default function Home() {
   };
 
   return (
-    <div className="container">
-      <img src="/images/doodlemaps.png" alt="Doodle Maps logo" />
+    <>
+      <img
+        className="doodle-logo"
+        src="/images/doodlemaps.png"
+        alt="Doodle Maps logo"
+      />
       <div className="how-to">
         <h2 className="how-to-heading">How to play:</h2>
         <p className="how-to-text">
@@ -37,6 +41,11 @@ export default function Home() {
           Play
         </button>
       </div>
-    </div>
+      <img className="home-doodle-1" src="/images/homedoodle1.png" alt="" />
+      <img className="home-doodle-2" src="/images/homedoodle2.png" alt="" />
+      <img className="home-doodle-3" src="/images/homedoodle3.png" alt="" />
+      <img className="home-doodle-4" src="/images/homedoodle4.png" alt="" />
+      <img className="home-doodle-5" src="/images/homedoodle5.png" alt="" />
+    </>
   );
 }
