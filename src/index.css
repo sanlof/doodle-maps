@@ -20,3 +20,10 @@ body {
   max-width: 375px;
   padding: 1.25rem;
 }
+
+button {
+  font-family: "klee one", sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
