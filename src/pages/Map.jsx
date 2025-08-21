@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import useProximityRouter from "../hooks/useProximityRouter";
 import useCountdown from "../hooks/useCountdown";
@@ -42,16 +42,25 @@ function distanceMeters(a, b) {
   return 2 * R * Math.asin(Math.sqrt(h));
 }
 
-// Nästa heltaliga tidsmål baserat på minutintervall
-function getNextTarget(minutes = 30) {
-  const now = new Date();
+// Nästa gräns (var 30:e minut: :00 eller :30)
+function getNextTarget(minutes = 30, now = new Date()) {
   const next = new Date(now);
   const currentMinutes = now.getMinutes();
   const remainder = currentMinutes % minutes;
-  const add = remainder === 0 ? minutes : minutes - remainder;
+  const add =
+    remainder === 0 && now.getSeconds() === 0 && now.getMilliseconds() === 0
+      ? minutes
+      : minutes - remainder;
   next.setSeconds(0, 0);
   next.setMinutes(currentMinutes + add);
   return next;
+}
+
+// Gruppindex baserat på klockslag: 0 för [00,30), 1 för [30,60) osv modulo antal grupper
+function getGroupIndexByClock(date = new Date()) {
+  const mins = date.getHours() * 60 + date.getMinutes();
+  const slot = Math.floor(mins / 30); // 0,1,2,3 … byter på hel/halv timme
+  return PLACE_GROUPS.length ? slot % PLACE_GROUPS.length : 0;
 }
 
 export default function Map() {
@@ -62,37 +71,36 @@ export default function Map() {
   const [googleMap, setGoogleMap] = useState(null);
   const [error, setError] = useState("");
 
-  // Aktuell gruppindex och dess tre platser
-  const [groupIndex, setGroupIndex] = useState(0);
+  // Ticka klockan varje sekund (driver omrendering & gruppbyte vid :00/:30)
+  const [now, setNow] = useState(new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  // Gruppindex och aktiva platser härleds direkt av tiden
+  const groupIndex = useMemo(() => getGroupIndexByClock(now), [now]);
   const currentPlaces = PLACE_GROUPS[groupIndex] ?? [];
 
-  // Markörer/cirklar för platsgruppen
-  const placeMarkersRef = useRef([]); // google.maps.Marker[]
-  const placeCirclesRef = useRef([]); // google.maps.Circle[]
+  // Countdown till nästa :00/:30
+  const [targetDate, setTargetDate] = useState(() => getNextTarget(30, now));
+  const { formatted, isOver } = useCountdown(targetDate);
 
-  // Användarens markör/cirkel
+  // När vi passerar gränsen, sätt nytt mål (gruppen byts automatiskt via `now`)
+  useEffect(() => {
+    if (isOver) setTargetDate(getNextTarget(30, new Date()));
+  }, [isOver]);
+
+  const placeMarkersRef = useRef([]);
+  const placeCirclesRef = useRef([]);
   const [userMarker, setUserMarker] = useState(null);
   const [userCircle, setUserCircle] = useState(null);
+  const lastNavigateTimeRef = useRef(0);
 
-  // Popup state
   const [showPopup, setShowPopup] = useState(false);
   const [popupPlace, setPopupPlace] = useState(null);
 
-  // Debounce för navigate/popup
-  const lastNavigateTimeRef = useRef(0);
-
-  // Countdown till nästa byte
-  const [targetDate, setTargetDate] = useState(getNextTarget(30));
-  const { formatted, isOver } = useCountdown(targetDate);
-
   const RADIUS_METERS = 25;
-
-  // När countdown går ut → byt till nästa grupp och resetta countdown
-  useEffect(() => {
-    if (!isOver) return;
-    setGroupIndex((i) => (i + 1) % PLACE_GROUPS.length);
-    setTargetDate(getNextTarget(30));
-  }, [isOver]);
 
   // Initiera Google Maps
   useEffect(() => {
@@ -114,32 +122,30 @@ export default function Map() {
           fullscreenControl: true,
         });
 
-        // Fit till alla platser första gången
+        // Startvy: alla platser
         const allBounds = new google.maps.LatLngBounds();
         PLACES_ALL.forEach((p) =>
           allBounds.extend(new google.maps.LatLng(p.lat, p.lng))
         );
         map.fitBounds(allBounds, 64);
-
         setGoogleMap(map);
       })
-      .catch((e) => {
-        console.error(e);
+      .catch(() =>
         setError(
           "Kunde inte ladda Google Maps. Kontrollera API-nyckeln och nätverket."
-        );
-      });
-
+        )
+      );
     return () => {
       isCancelled = true;
     };
   }, []);
 
-  // Skapa/uppdatera markörer & cirklar för AKTUELL GRUPP (3 platser)
+  // Markörer & cirklar för aktiva 3 platser (uppdateras när groupIndex ändras)
   useEffect(() => {
     if (!googleMap) return;
     const google = window.google;
 
+    // Rensa gamla
     placeMarkersRef.current.forEach((m) => m.setMap(null));
     placeCirclesRef.current.forEach((c) => c.setMap(null));
     placeMarkersRef.current = [];
@@ -147,7 +153,6 @@ export default function Map() {
 
     if (!currentPlaces.length) return;
 
-    // Fit bounds till gruppen
     const bounds = new google.maps.LatLngBounds();
 
     // SVG-ikon
@@ -160,24 +165,24 @@ export default function Map() {
 </svg>`;
 
     currentPlaces.forEach((place) => {
-      const center = { lat: place.lat, lng: place.lng };
-      bounds.extend(center);
+      const pos = { lat: place.lat, lng: place.lng };
+      bounds.extend(pos);
 
       const marker = new google.maps.Marker({
         map: googleMap,
-        position: center,
+        position: pos,
         title: place.title,
         icon: {
           url:
             "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svgIcon),
-          scaledSize: new google.maps.Size(48, 48),
-          anchor: new google.maps.Point(24, 24),
+          scaledSize: new google.maps.Size(32, 32),
+          anchor: new google.maps.Point(16, 16),
         },
       });
 
       const circle = new google.maps.Circle({
         map: googleMap,
-        center,
+        center: pos,
         radius: RADIUS_METERS,
         strokeColor: "#4285F4",
         strokeOpacity: 0.6,
@@ -186,7 +191,6 @@ export default function Map() {
         fillOpacity: 0.08,
       });
 
-      // Enkel info-fönster per markör
       const info = new google.maps.InfoWindow();
       marker.addListener("click", () => {
         info.setContent(
@@ -201,11 +205,11 @@ export default function Map() {
       placeCirclesRef.current.push(circle);
     });
 
-    // Zooma till gruppen men lämna lite padding
+    // Zooma till gruppen
     googleMap.fitBounds(bounds, 64);
-  }, [googleMap, groupIndex]); // byt när gruppen ändras
+  }, [googleMap, groupIndex, currentPlaces]);
 
-  // Rita/uppdatera användarens position + popup om nära någon av de 3 aktuella platserna
+  // Användarens position + popup om nära någon av de 3 aktiva platserna
   useEffect(() => {
     if (!googleMap || !position) return;
     const google = window.google;
@@ -247,29 +251,24 @@ export default function Map() {
       userCircle.setRadius(RADIUS_METERS);
     }
 
-    // ✅ Kolla endast mot de 3 aktuella platserna
     for (const place of currentPlaces) {
       const distance = distanceMeters(position, place);
-      const now = Date.now();
+      const nowMs = Date.now();
       if (
         distance <= RADIUS_METERS &&
-        now - lastNavigateTimeRef.current > 10_000
+        nowMs - lastNavigateTimeRef.current > 10_000
       ) {
-        lastNavigateTimeRef.current = now;
+        lastNavigateTimeRef.current = nowMs;
         setPopupPlace(place);
         setShowPopup(true);
         break;
       }
     }
-  }, [googleMap, position, currentPlaces]); // currentPlaces med i dependency
+  }, [googleMap, position, currentPlaces]);
 
   return (
     <div className="map-wrap">
-      <div className="countdown">
-        {isOver
-          ? `Byter till nästa 3 platser…`
-          : `Nya platser visas om: ${formatted}`}
-      </div>
+      <div className="countdown">{`Doodle Spots refresh in: ${formatted}`}</div>
 
       {(error || geoError) && (
         <p role="alert">
@@ -285,10 +284,7 @@ export default function Map() {
           className="popup-overlay"
           style={{
             position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
+            inset: 0,
             background: "rgba(0,0,0,0.4)",
             display: "flex",
             alignItems: "center",
