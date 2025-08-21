@@ -267,6 +267,16 @@ export default function Map() {
     }
   }, [googleMap, position, currentPlaces]);
 
+  useEffect(() => {
+    if (error) {
+      window.alert(error);
+    } else if (geoError) {
+      window.alert(
+        `Geolocation-fel: ${geoError.message}. Säkerställ HTTPS och ge plats-tillstånd.`
+      );
+    }
+  }, [error, geoError]);
+
   return (
     <div className="map-wrap">
       <Navbar backPath="/" />
@@ -274,13 +284,6 @@ export default function Map() {
         <div className="doodle-refresh-line">{`Doodle Spots refresh in:`}</div>
         <div className="doodle-refresh-time">{formatted}</div>
       </div>
-
-      {(error || geoError) && (
-        <p role="alert">
-          {error ??
-            `Geolocation-fel: ${geoError.message}. Säkerställ HTTPS och ge plats-tillstånd.`}
-        </p>
-      )}
 
       <div id="map" ref={mapRef} />
 
