@@ -7,26 +7,33 @@ export default function Toolbar({
   canvasRef,
   lineColorRef,
 }) {
-  const [activeTool, setActiveTool] = useState("brush");
+  const [selectedTool, setSelectedTool] = useState("brush");
+  const [selectedColor, setSelectedColor] = useState(
+    lineColorRef.current || "#000000"
+  );
 
   const onToolbarChange = (e) => {
-    if (!e.target) return;
-
     const ctx = ctxRef.current;
+    if (!ctx) return;
+
+    if (e.target.name === "lineWidth") {
+      lineWidthRef.current = Number(e.target.value);
+      return;
+    }
 
     if (e.target.name === "lineColor") {
+      const color = e.target.value;
       ctx.globalCompositeOperation = "source-over";
-      lineColorRef.current = e.target.value;
-      setActiveTool("brush");
+      lineColorRef.current = color;
+      setSelectedTool("brush");
+      setSelectedColor(color);
+      return;
     }
 
     if (e.target.id === "rubber") {
       ctx.globalCompositeOperation = "destination-out";
-      setActiveTool("rubber");
-    }
-
-    if (e.target.name === "lineWidth") {
-      lineWidthRef.current = Number(e.target.value);
+      setSelectedTool("rubber");
+      return;
     }
   };
 
@@ -60,19 +67,20 @@ export default function Toolbar({
         <label htmlFor="lineWidthThin">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="28"
+            width="27"
             height="27"
-            viewBox="0 0 28 27"
+            viewBox="0 0 27 27"
             fill="none"
           >
             <path
-              d="M21.7097 1C21.7097 1 3.91721 4.125 1.63611 8.42188C-0.644976 12.7188 26.5 8.22656 26.5 12.9141C26.5 17.6016 6.1983 18.5781 3.91721 20.7266C1.63611 22.875 18.2881 26 18.2881 26"
+              d="M21.2097 1C21.2097 1 3.41721 4.125 1.13611 8.42188C-1.14498 12.7188 26 8.22656 26 12.9141C26 17.6016 5.6983 18.5781 3.41721 20.7266C1.13611 22.875 17.7881 26 17.7881 26"
               stroke="black"
-              strokeWidth="2"
-              strokeLinecap="round"
+              stroke-width="2"
+              stroke-linecap="round"
             />
           </svg>
         </label>
+
         <input id="lineWidthMedium" name="lineWidth" type="radio" value="5" />
         <label htmlFor="lineWidthMedium">
           <svg
@@ -83,27 +91,28 @@ export default function Toolbar({
             fill="none"
           >
             <path
-              d="M21.9097 2C21.9097 2 4.11716 5.125 1.83607 9.42188C-0.445024 13.7188 26.7 9.22656 26.7 13.9141C26.7 18.6016 6.39825 19.5781 4.11716 21.7266C1.83607 23.875 18.488 27 18.488 27"
+              d="M22.2097 2C22.2097 2 4.41721 5.125 2.13611 9.42188C-0.144976 13.7188 27 9.22656 27 13.9141C27 18.6016 6.6983 19.5781 4.41721 21.7266C2.13611 23.875 18.7881 27 18.7881 27"
               stroke="black"
-              strokeWidth="3"
-              strokeLinecap="round"
+              stroke-width="3"
+              stroke-linecap="round"
             />
           </svg>
         </label>
+
         <input id="lineWidthFat" name="lineWidth" type="radio" value="8" />
         <label htmlFor="lineWidthFat">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="30"
+            width="29"
             height="29"
-            viewBox="0 0 30 29"
+            viewBox="0 0 29 29"
             fill="none"
           >
             <path
-              d="M23.1097 2C23.1097 2 5.31723 5.125 3.03614 9.42188C0.755049 13.7188 27.9 9.22656 27.9 13.9141C27.9 18.6016 7.59832 19.5781 5.31723 21.7266C3.03614 23.875 19.6881 27 19.6881 27"
+              d="M22.2097 2C22.2097 2 4.41721 5.125 2.13611 9.42188C-0.144976 13.7188 27 9.22656 27 13.9141C27 18.6016 6.6983 19.5781 4.41721 21.7266C2.13611 23.875 18.7881 27 18.7881 27"
               stroke="black"
-              strokeWidth="4"
-              strokeLinecap="round"
+              stroke-width="4"
+              stroke-linecap="round"
             />
           </svg>
         </label>
@@ -111,17 +120,26 @@ export default function Toolbar({
 
       <fieldset className="tools">
         <legend>Tools</legend>
-        <input id="rubber" name="lineColor" type="radio" value="rubber" />
-        <label htmlFor="rubber">
+
+        <input
+          id="rubber"
+          type="radio"
+          checked={selectedTool === "rubber"}
+          readOnly
+        />
+        <label
+          htmlFor="rubber"
+          className={selectedTool === "rubber" ? "active" : ""}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="26"
+            width="25"
             height="25"
-            viewBox="0 0 26 25"
+            viewBox="0 0 25 25"
             fill="none"
           >
             <path
-              d="M18.0221 0.781082L24.352 7.37689C25.3495 8.43169 25.3495 10.114 24.352 11.1688L12.6001 23.4392C11.639 24.4388 10.3377 25 8.98117 25C7.62462 25 6.32333 24.4388 5.36225 23.4392L0.848179 18.726C-0.149263 17.6712 -0.149263 15.9888 0.848179 14.934L14.4032 0.781082C15.4134 -0.260361 17.0246 -0.260361 18.0221 0.781082ZM2.65125 16.83L7.1781 21.5432C8.17555 22.598 9.7868 22.598 10.797 21.5432L15.3111 16.83L8.98117 10.2208L2.65125 16.83Z"
+              d="M17.922 0.781082L24.2519 7.37689C25.2494 8.43169 25.2494 10.114 24.2519 11.1688L12.5 23.4392C11.5389 24.4388 10.2376 25 8.88107 25C7.52452 25 6.22323 24.4388 5.26215 23.4392L0.748082 18.726C-0.249361 17.6712 -0.249361 15.9888 0.748082 14.934L14.3031 0.781082C15.3133 -0.260361 16.9246 -0.260361 17.922 0.781082ZM2.55115 16.83L7.07801 21.5432C8.07545 22.598 9.6867 22.598 10.6969 21.5432L15.211 16.83L8.88107 10.2208L2.55115 16.83Z"
               fill="black"
             />
           </svg>
@@ -164,121 +182,59 @@ export default function Toolbar({
       <fieldset className="colors">
         <legend>Colors</legend>
 
-        <input
-          id="lineColorBlack"
-          name="lineColor"
-          type="radio"
-          value="#000000"
-          defaultChecked
-        />
-        <label htmlFor="lineColorBlack">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 20 20"
-            fill="none"
-          >
-            <circle cx="10" cy="10" r="10" fill="#000000" />
-          </svg>
-        </label>
+        {["#000000", "#ffffff", "#EA4335", "#FBBC05", "#35A402", "#4285F4"].map(
+          (color, i) => (
+            <label
+              key={color}
+              id={color === "#ffffff" ? "lineColorWhite" : undefined}
+              className={
+                selectedTool === "brush" && selectedColor === color
+                  ? "active"
+                  : ""
+              }
+            >
+              <input
+                type="radio"
+                name="lineColor"
+                value={color}
+                checked={selectedTool === "brush" && selectedColor === color}
+                readOnly
+              />
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+                <circle cx="10" cy="10" r="10" fill={color} />
+              </svg>
+            </label>
+          )
+        )}
 
-        <input
-          id="lineColorWhite"
-          name="lineColor"
-          type="radio"
-          value="#ffffff"
-        />
-        <label htmlFor="lineColorWhite">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 20 20"
-            fill="none"
-          >
-            <circle cx="10" cy="10" r="10" fill="#ffffff" />
-          </svg>
+        <label
+          className={
+            selectedTool === "brush" &&
+            ![
+              "#000000",
+              "#ffffff",
+              "#EA4335",
+              "#FBBC05",
+              "#35A402",
+              "#4285F4",
+            ].includes(selectedColor)
+              ? "active"
+              : ""
+          }
+        >
+          <input
+            id="lineColorPicker"
+            type="color"
+            value={selectedColor}
+            onChange={(e) => {
+              const color = e.target.value;
+              lineColorRef.current = color;
+              ctxRef.current.globalCompositeOperation = "source-over";
+              setSelectedTool("brush");
+              setSelectedColor(color);
+            }}
+          />
         </label>
-
-        <input
-          id="lineColorRed"
-          name="lineColor"
-          type="radio"
-          value="#EA4335"
-        />
-        <label htmlFor="lineColorRed">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 20 20"
-            fill="none"
-          >
-            <circle cx="10" cy="10" r="10" fill="#EA4335" />
-          </svg>
-        </label>
-
-        <input
-          id="lineColorYellow"
-          name="lineColor"
-          type="radio"
-          value="#FBBC05"
-        />
-        <label htmlFor="lineColorYellow">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 20 20"
-            fill="none"
-          >
-            <circle cx="10" cy="10" r="10" fill="#FBBC05" />
-          </svg>
-        </label>
-
-        <input
-          id="lineColorGreen"
-          name="lineColor"
-          type="radio"
-          value="#35A402"
-        />
-        <label htmlFor="lineColorGreen">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 20 20"
-            fill="none"
-          >
-            <circle cx="10" cy="10" r="10" fill="#35A402" />
-          </svg>
-        </label>
-        <input
-          id="lineColorBlue"
-          name="lineColor"
-          type="radio"
-          value="#4285F4"
-        />
-        <label htmlFor="lineColorBlue">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 20 20"
-            fill="none"
-          >
-            <circle cx="10" cy="10" r="10" fill="#4285F4" />
-          </svg>
-        </label>
-
-        <input
-          id="lineColorPicker"
-          name="lineColor"
-          type="color"
-          defaultValue={lineColorRef.current}
-        />
-        <label htmlFor="lineColorPicker">ColorPicker</label>
       </fieldset>
 
       <button id="clear" type="button">
