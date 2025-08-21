@@ -2,8 +2,6 @@
 
 A location-based drawing game that turns the real world into your canvas! Explore designated "Doodle Spots" around Lindholmen, Gothenburg, and create artwork inspired by your surroundings.
 
-![Doodle Maps Logo](public/images/doodlemaps.png)
-
 ## 🎮 How to Play
 
 1. **Pick a Spot!** - The map shows several Doodle Spots that refresh every 30 minutes
