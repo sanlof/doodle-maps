@@ -14,10 +14,10 @@ export default function Success() {
     <section className="success">
       <img src="/images/welldone.png" alt="Well done" />
       <h1>Well done!</h1>
-      <p>Your artwork is saved and ready to inspire others</p>
+      <p>Your artwork has been saved in the gallery</p>
       <section className="buttons">
-        <button onClick={goToMap}>Map</button>
         <button onClick={goToGallery}>Gallery</button>
+        <button onClick={goToMap}>Map</button>
       </section>
     </section>
   );
