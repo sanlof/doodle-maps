@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import useProximityRouter from "../hooks/useProximityRouter";
 import useCountdown from "../hooks/useCountdown";
 import Popup from "./Popup";
+import "./Map.css";
 
 const PLACES = [
   {
