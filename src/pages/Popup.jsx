@@ -9,7 +9,7 @@ export default function Popup({ title, onStart }) {
         Lindholmen!
       </p>
       <button onClick={onStart}>Start drawing</button>
-      <img src="images/dog.png"></img>
+      <img src="images/dog.png" className="dog-img"></img>
     </div>
   );
 }
