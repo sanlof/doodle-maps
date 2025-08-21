@@ -4,9 +4,9 @@ import useProximityRouter from "../hooks/useProximityRouter";
 import useCountdown from "../hooks/useCountdown";
 
 const PLACES = [
-  { title: "Gulan", lat: 57.706083, lng: 11.936422 },
-  { title: "Färjeläget", lat: 57.705747, lng: 11.939973 },
-  { title: "Alkemisten", lat: 57.708575, lng: 11.939821 },
+  { title: "Filips distans pir", lat: 57.703681212214754, lng: 11.937960312954232 }
+  { title: "Lindholmspiren", lat: 57.70586356947422, lng: 11.939951542327886 },
+  { title: "Lindholmsbron", lat: 57.706483918887734, lng: 11.94262269881127 },
 ];
 
 function distanceMeters(a, b) {
