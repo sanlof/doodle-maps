@@ -28,7 +28,7 @@ export default function Gallery() {
   return (
     <section className="gallery">
       <section className="heading">
-        <h1>Gallery</h1>
+        <img src="/images/gallery.svg" alt="gallery" id="gallery-heading" />
         <p>Double tap to star a doodle</p>
       </section>
       <section className="buttons">

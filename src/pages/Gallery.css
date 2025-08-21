@@ -1,23 +1,54 @@
+.gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 0.81rem;
+}
+
 .heading {
   width: 100%;
   text-align: center;
+}
+
+#gallery-heading {
+  width: 12rem;
+  height: auto;
 }
 
 .gallery .buttons {
   width: 100%;
   display: flex;
   justify-content: center;
-  gap: 0.3rem;
+  gap: 0rem;
+}
+
+.gallery button {
+  text-transform: capitalize;
+  color: black;
+  font-size: 1rem;
+  padding: 0.3rem;
+}
+
+.gallery button:first-child {
+  border-radius: 0.875rem 0 0 0.875rem;
+  background: #84ceff;
+  box-shadow: 2px 2px 4px 0 rgba(0, 0, 0, 0.25) inset;
+}
+
+.gallery button:last-child {
+  border-radius: 0 0.875rem 0.875rem 0;
+  background: #13a0ff;
 }
 
 .gallery .paintings {
   margin-top: 1rem;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.3rem;
+  gap: 0.94rem;
   justify-content: center;
 }
 .paintings img {
-  aspect-ratio: 1;
   background: #ff9;
+  width: 5.2rem;
+  height: 5.2rem;
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.25);
 }
