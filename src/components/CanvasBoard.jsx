@@ -11,20 +11,30 @@ export default function CanvasBoard({
   const isPaintingRef = useRef(false);
   const offsetRef = useRef({ x: 0, y: 0 });
 
-  // Hantera canvas-resize
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     ctxRef.current = ctx;
 
+    // Sätt alltid fast storlek
+    const size = 333;
+    canvas.width = size;
+    canvas.height = size;
+    canvas.style.width = size + "px";
+    canvas.style.height = size + "px";
+
+    // Hjälpfunktioner på canvas
     canvas.getBlob = () =>
       new Promise((resolve, reject) => {
         try {
-          // PNG (lossless), kan ändras till "image/webp" om du vill
-          canvas.toBlob((blob) => {
-            if (blob) resolve(blob);
-            else reject(new Error("Kunde inte skapa bild från canvas."));
-          }, "image/png");
+          canvas.toBlob(
+            (blob) => {
+              if (blob) resolve(blob);
+              else reject(new Error("Kunde inte skapa bild från canvas."));
+            },
+            "image/png",
+            1
+          );
         } catch (err) {
           reject(err);
         }
@@ -40,33 +50,12 @@ export default function CanvasBoard({
     };
     updateOffset();
 
-    function resizeCanvasAndOffset() {
-      const parent = canvas.parentElement;
-      const style = getComputedStyle(parent);
-      const width = parseInt(style.width, 10);
-      const height = parseInt(style.height, 10);
-
-      // Spara gammal bild
-      const old = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-      canvas.width = width;
-      canvas.height = height;
-
-      if (old) ctx.putImageData(old, 0, 0);
-
-      updateOffset();
-
-      ctx.lineCap = "round";
-      ctx.strokeStyle = lineColorRef.current;
-      ctx.lineWidth = lineWidthRef.current;
-    }
-
-    resizeCanvasAndOffset();
-    window.addEventListener("resize", resizeCanvasAndOffset);
-
-    return () => window.removeEventListener("resize", resizeCanvasAndOffset);
+    ctx.lineCap = "round";
+    ctx.strokeStyle = lineColorRef.current;
+    ctx.lineWidth = lineWidthRef.current;
   }, [canvasRef, ctxRef, lineColorRef, lineWidthRef]);
 
+  // Rita/pekinteraktion
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = ctxRef.current;
