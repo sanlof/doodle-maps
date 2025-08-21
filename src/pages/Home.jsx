@@ -12,7 +12,7 @@ export default function Home() {
   };
 
   return (
-    <>
+    <div className="home">
       <img
         className="doodle-logo"
         src="/images/doodlemaps.png"
@@ -46,6 +46,6 @@ export default function Home() {
       <img className="home-doodle-3" src="/images/homedoodle3.png" alt="" />
       <img className="home-doodle-4" src="/images/homedoodle4.png" alt="" />
       <img className="home-doodle-5" src="/images/homedoodle5.png" alt="" />
-    </>
+    </div>
   );
 }

@@ -9,11 +9,15 @@ body {
   align-items: center;
   justify-content: flex-start;
   gap: 0.625rem;
+}
+.home {
+  text-align: center;
+  margin: -1.25rem;
+  padding: 2.5rem 1.25rem;
   position: relative;
   overflow: hidden;
   height: 100vh;
 }
-
 .doodle-logo {
   height: 8rem;
 }
