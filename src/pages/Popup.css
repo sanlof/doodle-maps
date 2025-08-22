@@ -29,6 +29,7 @@ p {
   padding: 0.6875rem 0.9375rem;
   justify-content: center;
   align-items: center;
+  color: black;
 }
 
 .dog-img {
