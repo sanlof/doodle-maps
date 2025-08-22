@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function distanceMeters(a, b) {
-  const R = 6371e3; // jordradie i meter
+  const R = 6371e3; 
   const toRad = (d) => (d * Math.PI) / 180;
   const dLat = toRad(b.lat - a.lat);
   const dLng = toRad(b.lng - a.lng);
@@ -20,7 +20,7 @@ export default function useProximityRouter(places, radiusMeters = 80) {
   const navigate = useNavigate();
   const navigatedRef = useRef(false);
   const [geoError, setGeoError] = useState(null);
-  const [position, setPosition] = useState(null); // {lat, lng, accuracy}
+  const [position, setPosition] = useState(null); 
 
   useEffect(() => {
     if (!("geolocation" in navigator)) {
@@ -30,13 +30,12 @@ export default function useProximityRouter(places, radiusMeters = 80) {
 
     let watchId;
 
-    // (Valfritt) Kolla behörighet – bra för UX
+    // Kolla behörighet
     if (navigator.permissions?.query) {
       navigator.permissions
         .query({ name: "geolocation" })
         .then((res) => {
-          // res.state: 'granted' | 'prompt' | 'denied'
-          // Du kan visa hint om 'denied' här om du vill.
+     
         })
         .catch(() => {});
     }

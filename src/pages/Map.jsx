@@ -56,11 +56,9 @@ function getNextTarget(minutes = 30, now = new Date()) {
   next.setMinutes(currentMinutes + add);
   return next;
 }
-
-// Gruppindex baserat på klockslag: 0 för [00,30), 1 för [30,60) osv modulo antal grupper
 function getGroupIndexByClock(date = new Date()) {
   const mins = date.getHours() * 60 + date.getMinutes();
-  const slot = Math.floor(mins / 30); // 0,1,2,3 … byter på hel/halv timme
+  const slot = Math.floor(mins / 30);
   return PLACE_GROUPS.length ? slot % PLACE_GROUPS.length : 0;
 }
 
@@ -72,14 +70,12 @@ export default function Map() {
   const [googleMap, setGoogleMap] = useState(null);
   const [error, setError] = useState("");
 
-  // Ticka klockan varje sekund (driver omrendering & gruppbyte vid :00/:30)
   const [now, setNow] = useState(new Date());
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(id);
   }, []);
 
-  // Gruppindex och aktiva platser härleds direkt av tiden
   const groupIndex = useMemo(() => getGroupIndexByClock(now), [now]);
   const currentPlaces = PLACE_GROUPS[groupIndex] ?? [];
 
@@ -87,7 +83,6 @@ export default function Map() {
   const [targetDate, setTargetDate] = useState(() => getNextTarget(30, now));
   const { formatted, isOver } = useCountdown(targetDate);
 
-  // När vi passerar gränsen, sätt nytt mål (gruppen byts automatiskt via `now`)
   useEffect(() => {
     if (isOver) setTargetDate(getNextTarget(30, new Date()));
   }, [isOver]);
